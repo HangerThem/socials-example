@@ -1,3 +1,9 @@
 export default function AuthLayout({ children }: LayoutProps<'/'>) {
-  return <body className="min-h-screen flex flex-col items-center justify-content">{children}</body>
+  return (
+    <body className="min-h-screen flex items-center justify-center">
+      <div></div>
+      
+      {children}
+    </body>
+  )
 }

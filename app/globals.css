@@ -1,26 +1,83 @@
 @import 'tailwindcss';
 
+/* bg: "#F7F7F8",
+surface: "#FFFFFF",
+border: "#E7E7EA",
+ink: "#16171A",
+muted: "#6B6D76",
+accent: {
+  DEFAULT: "#4B4FE0",
+  hover: "#3D40C4",
+},
+like: "#E8456B", */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F7F7F8;
+  --foreground: #FFFFFF;
+  --border: #E7E7EA;
+  --ink: #16171A;
+  --muted: #6B6D76;
+  --accent: #4B4FE0;
+  --accent-hover: #3D40C4;
+  --like: #E8456B;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-like: var(--like);
+  --font-sans: var(--font-space-grotesk);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #16171A;
+    --foreground: #1F2024;
+    --border: #2C2D31;
+    --ink: #F7F7F8;
+    --muted: #A0A0A0;
+    --accent: #4B4FE0;
+    --accent-hover: #3D40C4;
+    --like: #E8456B;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--ink);
+  font-family: var(--font-space-grotesk);
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer;
+
+  &.btn-primary {
+    @apply bg-accent hover:bg-accent-hover;
+  }
+
+  &.btn-secondary {
+    @apply bg-muted hover:bg-ink;
+  }
+
+  &.btn-danger {
+    @apply bg-like hover:bg-red-600;
+  }
+
+  &.btn-small {
+    @apply px-2 py-1 text-sm;
+  }
+
+  &.btn-medium {
+    @apply px-4 py-2 text-base;
+  }
+
+  &.btn-large {
+    @apply px-6 py-3 text-lg;
+  }
 }
