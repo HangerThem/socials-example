@@ -8,14 +8,15 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  email        String   @unique
-  password     String
-  displayName  String?
-  bio          String?
-  profileImage String?
-  createdAt    DateTime @default(now())
+  id              String   @id @default(cuid())
+  email           String   @unique
+  emailVerified   Boolean  @default(false)
+  username        String   @unique
+  displayUsername String?
+  bio             String?
+  profileImage    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   posts        Post[]
   comments     Comment[]
@@ -25,7 +26,58 @@ model User {
   following Follow[] @relation("Follower")
   followers Follow[] @relation("Following")
 
+  sessions Session[]
+  accounts Account[]
+
   @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 model Follow {
@@ -51,7 +103,7 @@ model Post {
 
   comments Comment[]
   likes    Like[]
-  media    Media[]
+  files    File[]
 
   @@index([authorId])
   @@map("posts")
@@ -95,9 +147,9 @@ model CommentLike {
   @@map("comment_likes")
 }
 
-model Media {
+model File {
   id     String @id @default(cuid())
-  path   String
+  url    String
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 

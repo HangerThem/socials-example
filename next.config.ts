@@ -1,14 +1,14 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   rewrites: async () => {
     return [
       {
-        source: "/media/:path*",
-        destination: "/uploads/:path*",
+        source: '/media/:path*',
+        destination: '/uploads/:path*',
       },
-    ];
+    ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig
