@@ -1,21 +1,33 @@
+import { cn } from '@/utils/cn'
+
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-	variant?: "primary" | "secondary" | "danger";
-	size?: "small" | "medium" | "large";
-	isLoading?: boolean;
-};
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  size?: 'small' | 'medium' | 'large'
+  align?: 'start' | 'center' | 'end'
+  isLoading?: boolean
+}
 
 export const Button = ({
-	variant = "primary",
-	size = "medium",
-	isLoading = false,
-	...props
+  variant = 'primary',
+  size = 'medium',
+  align = 'center',
+  isLoading = false,
+  className = '',
+  ...props
 }: ButtonProps) => {
-	return (
-		<button
-			className={`btn ${variant ? `btn-${variant}` : ''} ${size ? `btn-${size}` : ''}`}
-			{...props}
-		>
-			{isLoading ? "Loading..." : props.children}
-		</button>
-	);
-};
+  return (
+    <button
+      className={cn(
+        'btn',
+        { [`btn-${variant}`]: variant },
+        { [`btn-${size}`]: size },
+        { [`btn-align-${align}`]: align },
+        className,
+      )}
+      disabled={isLoading || props.disabled}
+      {...props}
+    >
+      {isLoading ? 'Loading...' : props.children}
+    </button>
+  )
+}
