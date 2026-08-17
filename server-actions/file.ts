@@ -8,6 +8,7 @@ const UPLOAD_DIR = process.env.UPLOAD_DIR ?? './public/uploads'
 
 export async function uploadFile(formData: FormData) {
   const file = formData.get('avatar') as File | null
+  const alt = formData.get('alt') as string | null
   if (!file || file.size === 0) return { error: 'No file provided' }
 
   if (!file.type.startsWith('image/')) {
@@ -30,6 +31,7 @@ export async function uploadFile(formData: FormData) {
   const uploadedFile = await prisma.file.create({
     data: {
       url,
+      alt,
     },
   })
 
@@ -44,14 +46,4 @@ function guessExt(mimeType: string) {
     'image/gif': '.gif',
   }
   return map[mimeType] ?? ''
-}
-
-export async function getImageUrl(session: any) {
-  if (!session?.user?.image) return null
-
-  const file = await prisma.file.findUnique({
-    where: { id: session.user.image },
-  })
-
-  return file?.url ?? null
 }

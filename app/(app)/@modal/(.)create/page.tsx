@@ -1,4 +1,4 @@
-import { Modal } from '@/components/modal'
+import { Modal } from '@/components/Modal'
 import { CreateForm } from '@/components/forms/CreateForm'
 
 export default function CreateModal() {
