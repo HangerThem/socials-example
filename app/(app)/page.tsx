@@ -1,7 +1,13 @@
-export default function AppPage() {
+import { getPosts } from '@/server-actions/post'
+import { PostsProvider } from '@/context/postsContext'
+import { PostsList } from '@/components/PostsList'
+
+export default async function AppPage() {
+  const posts = await getPosts()
+
   return (
-    <div className="flex h-full items-center justify-center">
-      <h1 className="text-3xl font-bold">Welcome to the App</h1>
-    </div>
+    <PostsProvider posts={posts}>
+      <PostsList />
+    </PostsProvider>
   )
 }

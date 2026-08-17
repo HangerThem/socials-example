@@ -7,11 +7,11 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface DropdownProps {
-  trigger: React.ReactNode
+  children: React.ReactNode
   content: React.ReactNode
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ trigger, content }) => {
+export function Dropdown({ children, content }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { refs, floatingStyles } = useFloating({
     open: isOpen,
@@ -69,7 +69,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ trigger, content }) => {
         setIsOpen((prev) => !prev)
       }}
     >
-      <button className="focus:outline-none cursor-pointer">{trigger}</button>
+      <button className="focus:outline-none cursor-pointer">{children}</button>
       {canUseDOM &&
         createPortal(
           <AnimatePresence>

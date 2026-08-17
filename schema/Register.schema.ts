@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { usernameIsUnique, emailIsUnique } from '@/server-actions/user'
+import { usernameRegex } from '@/const/usernameRegex'
 
 export const registerSchema = z
   .object({
@@ -7,7 +8,7 @@ export const registerSchema = z
       .string()
       .min(3, 'Username must be at least 3 characters')
       .max(20, 'Username must be at most 20 characters')
-      .regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, and underscores allowed')
+      .regex(usernameRegex, 'Only letters, numbers, and underscores allowed')
       .refine(async (username) => await usernameIsUnique(username), {
         message: 'Username is already taken',
       }),

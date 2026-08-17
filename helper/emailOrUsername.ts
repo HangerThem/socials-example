@@ -1,5 +1,5 @@
 import { emailRegex } from '@/const/emailRegex'
-import { usernameCharsRegex } from '@/const/usernameCharsRegex'
+import { usernameRegex } from '@/const/usernameRegex'
 import { z } from 'zod'
 
 /**
@@ -36,7 +36,7 @@ export const validateEmailOrUsername = (value: string, ctx: z.RefinementCtx) => 
       message: 'Username must be at most 20 characters',
       origin: 'custom',
     })
-  } else if (!usernameCharsRegex.test(value)) {
+  } else if (!usernameRegex.test(value)) {
     ctx.addIssue({
       code: 'custom',
       message: 'Username can only contain letters, numbers, and underscores',

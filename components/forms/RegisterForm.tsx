@@ -42,10 +42,6 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
       try {
         const formData = new FormData()
         formData.append('avatar', data.profilePicture)
-        formData.append(
-          'alt',
-          `${data.username}'${data.username[data.username.length - 1] === 's' ? '' : 's'} profile picture`,
-        )
         const uploadedFile = await uploadFile(formData)
         if ('error' in uploadedFile) {
           setServerError(uploadedFile.error)

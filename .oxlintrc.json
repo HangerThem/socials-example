@@ -18,6 +18,7 @@
     "typescript/no-explicit-any": "warn",
     "import/no-cycle": "error",
     "import/no-unassigned-import": "off",
+    "no-underscore-dangle": "off",
     "prefer-const": [
       "error",
       {

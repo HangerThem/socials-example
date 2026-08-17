@@ -9,19 +9,8 @@
   --accent: #4b4fe0;
   --accent-hover: #3d40c4;
   --like: #e8456b;
+  --like-hover: #c72e55;
   --font-space-grotesk: 'Space Grotesk', sans-serif;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-border: var(--border);
-  --color-ink: var(--ink);
-  --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-like: var(--like);
-  --font-sans: var(--font-space-grotesk);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,7 +23,21 @@
     --accent: #4b4fe0;
     --accent-hover: #3d40c4;
     --like: #e8456b;
+    --like-hover: #c72e55;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-like: var(--like);
+  --color-like-hover: var(--like-hover);
+  --font-sans: var(--font-space-grotesk);
 }
 
 body {
@@ -44,7 +47,7 @@ body {
 }
 
 .btn {
-  @apply inline-flex items-center rounded-md font-medium transition-colors outline-none disabled:opacity-50 disabled:pointer-events-none cursor-pointer;
+  @apply inline-flex items-center gap-1 font-medium transition-colors outline-none disabled:opacity-50 disabled:pointer-events-none cursor-pointer;
 
   &.btn-primary {
     @apply bg-accent hover:bg-accent-hover;
@@ -59,7 +62,7 @@ body {
   }
 
   &.btn-danger {
-    @apply bg-like hover:bg-red-600;
+    @apply bg-like hover:bg-like-hover;
   }
 
   &.btn-small {
@@ -85,4 +88,38 @@ body {
   &.btn-align-end {
     @apply justify-end;
   }
+
+  &.btn-rounded-none {
+    @apply rounded-none;
+  }
+
+  &.btn-rounded-sm {
+    @apply rounded-sm;
+  }
+
+  &.btn-rounded-md {
+    @apply rounded-md;
+  }
+
+  &.btn-rounded-lg {
+    @apply rounded-lg;
+  }
+
+  &.btn-rounded-full {
+    @apply rounded-full;
+  }
+}
+
+.post-tag,
+.post-mention,
+.post-link {
+  @apply text-accent font-bold;
+}
+
+.post-link {
+  @apply hover:underline;
+}
+
+.post-item:not(:has(button:hover, a:hover)) {
+  @apply hover:bg-foreground transition-colors;
 }
