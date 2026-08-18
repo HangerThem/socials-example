@@ -6,7 +6,7 @@ export const postSchema = z.object({
     .array(
       z.object({
         file: z.instanceof(File),
-        alt: z.string().optional(),
+        alt: z.string().max(100, 'Alt text must be at most 100 characters long').optional(),
       }),
     )
     .optional(),

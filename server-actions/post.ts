@@ -33,9 +33,14 @@ export async function createPost(content: string, fileIds: string[]) {
 type GetPostsParams = {
   lastPostId?: string
   limit?: number
+  username?: string
 }
 
-export async function getPosts({ lastPostId, limit = postPagination }: GetPostsParams = {}) {
+export async function getPosts({
+  lastPostId,
+  limit = postPagination,
+  username,
+}: GetPostsParams = {}) {
   const session = await auth.api.getSession({
     headers: await headers(),
   })
@@ -46,6 +51,9 @@ export async function getPosts({ lastPostId, limit = postPagination }: GetPostsP
 
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: 'desc' },
+    ...(username && {
+      where: { author: { username } },
+    }),
     include: {
       postFiles: {
         include: {
@@ -98,11 +106,6 @@ export async function getPost(postId: string) {
           likes: true,
         },
       },
-      comments: {
-        include: {
-          author: true,
-        },
-      },
     },
   })
 
@@ -110,10 +113,9 @@ export async function getPost(postId: string) {
     throw new Error('Post not found')
   }
 
-  return {
-    ...post,
-    liked: post?.likes.some((like) => like.userId === session.user.id),
-  }
+  return Object.assign(post, {
+    liked: post.likes.some((like) => like.userId === session.user.id),
+  })
 }
 
 export async function deletePost(postId: string) {

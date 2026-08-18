@@ -18,29 +18,31 @@ const PostsContext = createContext<PostsContextType | undefined>(undefined)
 
 export const PostsProvider = ({
   posts: initialPosts,
+  username,
   children,
 }: {
   posts: PostSimple[]
+  username?: string
   children: React.ReactNode
 }) => {
   const [posts, setPosts] = useState(initialPosts)
-  const [hasMore, setHasMore] = useState(true)
+  const [hasMore, setHasMore] = useState(initialPosts.length === postPagination)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   const loadMorePosts = useCallback(async () => {
-    if (posts.length === 0) return
+    if (isLoadingMore || !hasMore) return
     setIsLoadingMore(true)
 
     const lastPostId = posts[posts.length - 1].id
     try {
-      const newPosts = await getPosts({ lastPostId })
+      const newPosts = await getPosts({ lastPostId, username })
       setPosts((prev) => [...prev, ...newPosts])
       if (newPosts.length < postPagination) setHasMore(false)
     } catch (error) {
       console.error('Error loading more posts:', error)
     }
     setIsLoadingMore(false)
-  }, [posts])
+  }, [posts, isLoadingMore, hasMore, username])
 
   const postComment = useCallback(
     async (postId: string, content: string) => {

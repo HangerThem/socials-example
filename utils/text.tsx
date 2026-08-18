@@ -70,7 +70,7 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
     )
   })
 
-  collect(tagRegex, 'tag', (match) => <span className="post-tag">{match[0]}</span>)
+  collect(tagRegex, 'tag', (match) => <span className="post-tag">{match[1]}</span>)
 
   tokens.sort((a, b) => a.start - b.start)
   const resolved: Token[] = []

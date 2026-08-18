@@ -9,6 +9,7 @@ import { Textarea } from '../ui/Textarea'
 import { batchUploadFiles } from '@/server-actions/file'
 import { createPost } from '@/server-actions/post'
 import { useRouter } from 'next/navigation'
+import { Button } from '../ui/Button'
 
 export function CreateForm() {
   const [serverError, setServerError] = useState<string | null>(null)
@@ -61,7 +62,7 @@ export function CreateForm() {
         {...register('content')}
       />
 
-      {errors.content && <span className="text-red-500">{errors.content.message}</span>}
+      {errors.content && <span className="text-like">{errors.content.message}</span>}
 
       <Controller
         name="files"
@@ -71,18 +72,25 @@ export function CreateForm() {
             label="Upload an image"
             error={errors.files?.message}
             multiple
-            allowAlt
             id="files"
+            setAlt={(index, alt) => {
+              const currentFiles = field.value || []
+              const updatedFiles = [...currentFiles]
+              if (updatedFiles[index]) {
+                updatedFiles[index] = { ...updatedFiles[index], alt }
+                field.onChange(updatedFiles)
+              }
+            }}
             {...field}
           />
         )}
       />
 
-      {serverError && <span className="text-red-500">{serverError}</span>}
+      {serverError && <span className="text-like">{serverError}</span>}
 
-      <button type="submit" disabled={isSubmitting} className="bg-blue-500 text-white p-2 rounded">
+      <Button type="submit" isLoading={isSubmitting}>
         {isSubmitting ? 'Posting...' : 'Post'}
-      </button>
+      </Button>
     </form>
   )
 }

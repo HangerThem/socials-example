@@ -108,7 +108,7 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
               {...register('password')}
               error={errors.password?.message}
             />
-            <div className="h-2 w-full rounded-full bg-background">
+            <div className="h-2 w-full rounded-full bg-foreground">
               <motion.div
                 className="h-2 rounded-full bg-accent"
                 initial={{ width: 0 }}
@@ -177,7 +177,7 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
           </>
         )}
 
-        {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
+        {serverError && <p className="text-like text-sm">{serverError}</p>}
       </form>
 
       <p className="text-sm text-muted mt-4 text-center">

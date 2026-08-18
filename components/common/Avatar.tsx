@@ -3,20 +3,35 @@ import Image from 'next/image'
 
 type AvatarProps = {
   username: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'profile'
   src?: string | null
   alt?: string | null
+  className?: string
 }
 
 const sizeClasses = {
   sm: 'w-6 h-6',
   md: 'w-8 h-8',
   lg: 'w-12 h-12',
+  profile: 'w-32 h-32',
 }
 
-export function Avatar({ username, size = 'md', src, alt }: AvatarProps) {
+const textSizeClasses = {
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+  profile: 'text-5xl',
+}
+
+export function Avatar({ username, size = 'md', src, alt, className }: AvatarProps) {
   return (
-    <div className={cn('relative rounded-full overflow-hidden bg-foreground', sizeClasses[size])}>
+    <div
+      className={cn(
+        'relative rounded-full overflow-hidden bg-foreground border border-background',
+        sizeClasses[size],
+        className,
+      )}
+    >
       {src ? (
         <Image
           src={src}
@@ -27,7 +42,9 @@ export function Avatar({ username, size = 'md', src, alt }: AvatarProps) {
           fill
         />
       ) : (
-        <span className="text-xl font-bold flex items-center justify-center w-full h-full">
+        <span
+          className={cn('flex items-center justify-center w-full h-full', textSizeClasses[size])}
+        >
           {username?.[0] || 'U'}
         </span>
       )}

@@ -34,6 +34,7 @@ export async function getUserByUsername(username: string) {
         select: {
           followers: true,
           following: true,
+          posts: true,
         },
       },
     },
@@ -76,6 +77,10 @@ export async function triggerFollow(username: string) {
 
   if (!session) {
     throw new Error('User not authenticated')
+  }
+
+  if (session.user.username === username) {
+    throw new Error('You cannot follow yourself')
   }
 
   const user = await prisma.user.findUnique({
@@ -155,4 +160,55 @@ export async function getFollowing(username: string) {
   }
 
   return user.following
+}
+
+export async function searchUsers(query: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session) {
+    throw new Error('User not authenticated')
+  }
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [{ username: { contains: query } }, { displayUsername: { contains: query } }],
+    },
+    include: {
+      _count: {
+        select: {
+          followers: true,
+          following: true,
+          posts: true,
+        },
+      },
+    },
+    take: 10,
+  })
+
+  if (!users) {
+    return []
+  }
+
+  const [isFollowing, isFollower] = await Promise.all([
+    prisma.follow.findMany({
+      where: {
+        followerId: session.user.id,
+        followingId: { in: users.map((user) => user.id) },
+      },
+    }),
+    prisma.follow.findMany({
+      where: {
+        followerId: { in: users.map((user) => user.id) },
+        followingId: session.user.id,
+      },
+    }),
+  ])
+
+  return users.map((user) => {
+    const following = isFollowing.some((follow) => follow.followingId === user.id)
+    const follower = isFollower.some((follow) => follow.followerId === user.id)
+    return Object.assign(user, { isFollowing: following, isFollower: follower })
+  })
 }

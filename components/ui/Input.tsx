@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   label?: string
   error?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
-export const Input = ({ label, error, ...props }: InputProps) => {
+export const Input = ({ label, error, size = 'medium', ...props }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
@@ -23,13 +24,12 @@ export const Input = ({ label, error, ...props }: InputProps) => {
       <div className="relative">
         <input
           className={cn(
-            'w-full px-3 py-2 border rounded-md outline-none border-border focus:border-accent my-1 bg-background',
+            'input',
             {
-              'border-red-500': error,
+              'input-error': error,
             },
-            {
-              'pr-7': props.type === 'password',
-            },
+            { [`input-${size}`]: size },
+            props.className,
           )}
           {...props}
           type={props.type === 'password' && showPassword ? 'text' : props.type}
@@ -50,7 +50,7 @@ export const Input = ({ label, error, ...props }: InputProps) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="text-red-500 text-sm"
+            className="text-like text-sm"
           >
             {error}
           </motion.p>

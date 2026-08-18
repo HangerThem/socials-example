@@ -116,10 +116,38 @@ body {
   @apply text-accent font-bold;
 }
 
+.post-tag:before {
+  @apply content-['#'];
+}
+
 .post-link {
   @apply hover:underline;
 }
 
 .post-item:not(:has(button:hover, a:hover)) {
   @apply hover:bg-foreground transition-colors;
+}
+
+.input {
+  @apply w-full border rounded-md outline-none border-border focus:border-accent my-1 bg-background;
+
+  &.input-small {
+    @apply text-sm px-2 py-1;
+  }
+
+  &.input-medium {
+    @apply text-base px-3 py-2;
+  }
+
+  &.input-large {
+    @apply text-lg px-6 py-3;
+  }
+
+  &[type='password'] {
+    @apply pr-7;
+  }
+
+  &.input-error {
+    @apply border-like;
+  }
 }

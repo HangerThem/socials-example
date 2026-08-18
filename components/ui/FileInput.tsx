@@ -3,7 +3,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ImageIcon, X } from 'lucide-react'
 import Image from 'next/image'
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useRef } from 'react'
+import { Input } from './Input'
 
 export type FileItem = { file: File; alt?: string }
 
@@ -13,7 +14,7 @@ type BaseProps = Omit<
 > & {
   label?: string
   error?: string
-  allowAlt?: boolean
+  setAlt?: (index: number, alt: string) => void
 }
 
 type FileInputProps = BaseProps &
@@ -31,9 +32,9 @@ type FileInputProps = BaseProps &
   )
 
 export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
-  ({ label, error, value, onChange, multiple, allowAlt, ...props }, ref) => {
-    const [previewUrls, setPreviewUrls] = useState<string[]>([])
+  ({ label, error, value, onChange, multiple, setAlt, ...props }, ref) => {
     const labelRef = useRef<HTMLLabelElement>(null)
+    const urlCacheRef = useRef<Map<File, string>>(new Map())
 
     const items: FileItem[] = multiple
       ? ((value as FileItem[] | null) ?? [])
@@ -41,20 +42,34 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
         ? [{ file: value as File }]
         : []
 
-    useEffect(() => {
-      if (items.length === 0) {
-        setPreviewUrls([])
-        return
+    const previewUrls = items.map(({ file }) => {
+      let url = urlCacheRef.current.get(file)
+      if (!url) {
+        url = URL.createObjectURL(file)
+        urlCacheRef.current.set(file, url)
       }
+      return url
+    })
 
-      const urls = items.map(({ file }) => URL.createObjectURL(file))
-      setPreviewUrls(urls)
-
-      return () => {
-        urls.forEach((url) => URL.revokeObjectURL(url))
+    useEffect(() => {
+      const cache = urlCacheRef.current
+      const currentFiles = new Set(items.map((i) => i.file))
+      for (const [file, url] of cache) {
+        if (!currentFiles.has(file)) {
+          URL.revokeObjectURL(url)
+          cache.delete(file)
+        }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value])
+    })
+
+    useEffect(() => {
+      const cache = urlCacheRef.current
+      return () => {
+        cache.forEach((url) => URL.revokeObjectURL(url))
+        cache.clear()
+      }
+    }, [])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const selected = e.target.files
@@ -142,17 +157,13 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
                   </button>
                 </div>
 
-                {allowAlt && (
-                  <input
+                {setAlt && (
+                  <Input
                     type="text"
                     placeholder="Alt text"
+                    size="small"
                     value={items[i]?.alt ?? ''}
-                    onChange={(e) => {
-                      const next = [...items]
-                      next[i] = { ...next[i], alt: e.target.value }
-                      onChange?.(next)
-                    }}
-                    className="w-full mt-1 px-2 py-1 border rounded-md outline-none border-border focus:border-accent bg-background text-sm"
+                    onChange={(e) => setAlt(i, e.target.value)}
                   />
                 )}
               </div>
@@ -185,7 +196,7 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="text-red-500 text-sm"
+              className="text-like text-sm"
             >
               {error}
             </motion.p>

@@ -78,7 +78,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
             Remember me
           </label>
         </div>
-        {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
+        {serverError && <p className="text-like text-sm">{serverError}</p>}
         <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>
           {isSubmitting ? 'Logging in…' : 'Login'}
         </Button>

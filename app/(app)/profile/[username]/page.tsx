@@ -1,46 +1,41 @@
 'use client'
 
-import Image from 'next/image'
 import { FollowButton } from '@/components/actions/FollowButton'
 import { useProfile } from '@/context/profileContext'
 import { useSession } from '@/lib/auth-client'
+import { Avatar } from '@/components/common/Avatar'
+import { PostsList } from '@/components/PostsList'
 
 export default function ProfilePage() {
   const { user } = useProfile()
   const { data: session } = useSession()
 
   return (
-    <div className="flex h-full items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-32 h-32 relative rounded-full overflow-hidden bg-foreground">
-          {user.image ? (
-            <Image
-              src={user.image}
-              alt={user.image || 'User Avatar'}
-              className="object-cover"
-              fill
-            />
-          ) : (
-            <span className="text-4xl font-bold flex items-center justify-center w-full h-full">
-              {user.username?.[0] || 'U'}
-            </span>
-          )}
-        </div>
-        <h1 className="text-2xl font-bold">{user.displayUsername || user.username}</h1>
-        <p className="text-sm text-muted">@{user.username}</p>
-        <div className="flex gap-4 text-sm text-muted">
-          <span>Following: {user._count.following}</span>
-          <span>Followers: {user._count.followers}</span>
-        </div>
-        {session?.user.username !== user.username && (
-          <>
-            <span className="text-sm text-muted">
-              This user {user.isFollower ? '' : 'does not'} follows you
-            </span>
-            <FollowButton />
-          </>
-        )}
+    <div className="flex flex-col h-full w-full">
+      <div className="w-full relative">
+        <div className="w-full h-48 bg-accent" />
+        <Avatar
+          username={user.username}
+          src={user.image}
+          size="profile"
+          className="absolute -bottom-16 left-12 border-4 border-background"
+        />
       </div>
+      <div className="flex gap-1 mt-16 px-4 items-start justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold">{user.displayUsername || user.username}</h1>
+          <p className="text-sm text-muted">@{user.username}</p>
+          <div className="flex gap-4 text-sm text-muted">
+            <span>{user._count.following} following</span>
+            <span>{user._count.followers} followers</span>
+            <span>{user._count.posts} posts</span>
+          </div>
+          <p>{user.bio}</p>
+        </div>
+        {session && session.user.username !== user.username && <FollowButton />}
+      </div>
+
+      <PostsList />
     </div>
   )
 }

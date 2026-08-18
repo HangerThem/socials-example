@@ -3,28 +3,29 @@
 import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { Button } from '@/components/ui/Button'
-import { deletePost } from '@/server-actions/post'
 import { Modal } from '../Modal'
 import { useState } from 'react'
+import { usePost } from '@/context/postContext'
 
-type PostActionsProps = {
-  postId: string
+type CommentActionsProps = {
+  commentId: string
 }
 
-export function PostActions({ postId }: PostActionsProps) {
+export function CommentActions({ commentId }: CommentActionsProps) {
+  const { deleteComment } = usePost()
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
     <>
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <h3 className="text-lg font-semibold mb-2">Delete Post</h3>
-        <p className="mb-4 text-sm text-muted">Are you sure you want to delete this post?</p>
+        <h3 className="text-lg font-semibold mb-2">Delete Comment</h3>
+        <p className="mb-4 text-sm text-muted">Are you sure you want to delete this comment?</p>
         <div className="flex gap-2">
           <Button
             size="small"
             variant="danger"
             onClick={async () => {
-              await deletePost(postId)
+              await deleteComment(commentId)
               setModalOpen(false)
             }}
           >
@@ -42,7 +43,7 @@ export function PostActions({ postId }: PostActionsProps) {
               size="small"
               variant="ghost"
               align="start"
-              onClick={() => console.log(`Edit post ${postId}`)}
+              onClick={() => console.log(`Edit comment ${commentId}`)}
             >
               <Pencil className="h-3 w-3 mr-1" />
               Edit
