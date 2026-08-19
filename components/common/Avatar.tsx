@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 type AvatarProps = {
   username: string
-  size?: 'sm' | 'md' | 'lg' | 'profile'
+  size?: 'sm' | 'md' | 'lg' | 'profile' | 'full'
   src?: string | null
   alt?: string | null
   className?: string
@@ -14,6 +14,7 @@ const sizeClasses = {
   md: 'w-8 h-8',
   lg: 'w-12 h-12',
   profile: 'w-32 h-32',
+  full: 'w-full h-auto aspect-square',
 }
 
 const textSizeClasses = {
@@ -21,13 +22,14 @@ const textSizeClasses = {
   md: 'text-base',
   lg: 'text-lg',
   profile: 'text-5xl',
+  full: 'text-6xl',
 }
 
 export function Avatar({ username, size = 'md', src, alt, className }: AvatarProps) {
   return (
     <div
       className={cn(
-        'relative rounded-full overflow-hidden bg-foreground border border-background',
+        'relative rounded-full overflow-hidden  border border-background bg-foreground',
         sizeClasses[size],
         className,
       )}

@@ -4,7 +4,7 @@ import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { Button } from '@/components/ui/Button'
 import { deletePost } from '@/server-actions/post'
-import { Modal } from '../Modal'
+import { Modal } from '../modal/Modal'
 import { useState } from 'react'
 
 type PostActionsProps = {

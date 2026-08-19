@@ -63,7 +63,7 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
           </div>
         }
       >
-        <Link href={`/profile/${id}`} className="post-mention">
+        <Link href={`/profile/${id}`} className="post-mention" onClick={(e) => e.stopPropagation()}>
           {match[0] || 'Smazaný uživatel'}
         </Link>
       </Tooltip>

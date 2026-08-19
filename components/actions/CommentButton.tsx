@@ -2,7 +2,7 @@
 
 import { MessageCircle } from 'lucide-react'
 import { Button } from '../ui/Button'
-import { Modal } from '../Modal'
+import { Modal } from '../modal/Modal'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { commentSchema, type CommentSchema } from '@/schema/Comment.schema'

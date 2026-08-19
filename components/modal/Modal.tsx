@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/utils/cn'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
@@ -7,10 +8,11 @@ import { createPortal } from 'react-dom'
 type ModalProps = {
   open: boolean
   onClose: () => void
+  transparent?: boolean
   children: React.ReactNode
 }
 
-export function Modal({ open, onClose, children }: ModalProps) {
+export function Modal({ open, onClose, transparent, children }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -38,9 +40,15 @@ export function Modal({ open, onClose, children }: ModalProps) {
               e.stopPropagation()
               if (e.target === overlayRef.current) onClose()
             }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
           >
-            <div className="bg-background rounded-lg p-6 max-w-md w-full">{children}</div>
+            <div
+              className={cn('rounded-lg p-6 max-w-md w-full', {
+                'bg-background': !transparent,
+              })}
+            >
+              {children}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>,

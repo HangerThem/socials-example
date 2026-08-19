@@ -14,6 +14,7 @@ import { motion } from 'framer-motion'
 import { ChevronLeft } from 'lucide-react'
 import { FileInput } from '@/components/ui/FileInput'
 import { getSafeCallbackUrl } from '@/utils/safe-redirect'
+import { Textarea } from '../ui/Textarea'
 
 type RegisterFormProps = {
   callbackUrl?: string | null
@@ -150,6 +151,7 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
                   label="Profile picture (optional)"
                   error={errors.profilePicture?.message}
                   id="profilePicture"
+                  accept="image/*"
                   {...field}
                 />
               )}
@@ -163,10 +165,9 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
               error={errors.displayUsername?.message}
             />
 
-            <Input
+            <Textarea
               label="Bio (optional)"
               id="bio"
-              type="text"
               {...register('bio')}
               error={errors.bio?.message}
             />

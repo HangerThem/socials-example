@@ -48,6 +48,7 @@ export function PostItem({ post, isCurrentUser }: PostItemProps) {
       <Link
         href={`/profile/${post.author.username}`}
         className="group flex items-center gap-2 w-fit"
+        onClick={(e) => e.stopPropagation()}
       >
         <Avatar username={post.author.username} src={post.author.image} />
         <div className="flex flex-col">

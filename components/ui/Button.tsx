@@ -65,6 +65,7 @@ export const Button = ({
         e.stopPropagation()
         buttonProps.onClick?.(e)
       }}
+      type={buttonProps.type || 'button'}
     >
       {isLoading ? 'Loading...' : buttonProps.children}
     </button>

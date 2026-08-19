@@ -95,32 +95,30 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
 
     return (
       <div className="flex flex-col">
-        {label && (
-          <label ref={labelRef} htmlFor={props.id}>
-            <span className="text-sm font-medium">{label}</span>
-            {!multiple && (
-              <div
-                className={
-                  'relative mt-1 flex flex-wrap items-center justify-center gap-2 rounded-lg cursor-pointer p-2 w-full max-w-48 aspect-square mx-auto overflow-hidden'
-                }
-              >
-                {previewUrls.length === 0 && (
-                  <ImageIcon className="w-6 h-6 text-muted-foreground" />
-                )}
+        <label ref={labelRef} htmlFor={props.id}>
+          {label && <span className="text-sm font-medium">{label}</span>}
+          {!multiple && (
+            <div
+              className={
+                'border border-border relative mt-1 flex flex-wrap items-center justify-center gap-2 rounded-lg cursor-pointer p-2 w-full max-w-48 aspect-square mx-auto overflow-hidden'
+              }
+            >
+              {previewUrls.length === 0 && (
+                <ImageIcon className="w-12 h-12 text-muted-foreground" />
+              )}
 
-                {previewUrls[0] && (
-                  <Image
-                    src={previewUrls[0]}
-                    alt="Preview"
-                    className="object-cover"
-                    fill
-                    sizes="192px"
-                  />
-                )}
-              </div>
-            )}
-          </label>
-        )}
+              {previewUrls[0] && (
+                <Image
+                  src={previewUrls[0]}
+                  alt="Preview"
+                  className="object-cover"
+                  fill
+                  sizes="192px"
+                />
+              )}
+            </div>
+          )}
+        </label>
 
         {multiple && (
           <div className="mt-1 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">

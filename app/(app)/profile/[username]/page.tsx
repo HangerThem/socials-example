@@ -5,37 +5,69 @@ import { useProfile } from '@/context/profileContext'
 import { useSession } from '@/lib/auth-client'
 import { Avatar } from '@/components/common/Avatar'
 import { PostsList } from '@/components/PostsList'
+import { Modal } from '@/components/modal/Modal'
+import { UpdateProfilePictureForm } from '@/components/forms/UpdateProfilePictureForm'
+import { useMemo, useState } from 'react'
+import { cn } from '@/utils/cn'
+import { Camera } from 'lucide-react'
 
 export default function ProfilePage() {
   const { user } = useProfile()
   const { data: session } = useSession()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const isCurrentUser = useMemo(
+    () => session?.user.username === user.username,
+    [session, user.username],
+  )
 
   return (
-    <div className="flex flex-col h-full w-full">
-      <div className="w-full relative">
-        <div className="w-full h-48 bg-accent" />
-        <Avatar
-          username={user.username}
-          src={user.image}
-          size="profile"
-          className="absolute -bottom-16 left-12 border-4 border-background"
-        />
-      </div>
-      <div className="flex gap-1 mt-16 px-4 items-start justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold">{user.displayUsername || user.username}</h1>
-          <p className="text-sm text-muted">@{user.username}</p>
-          <div className="flex gap-4 text-sm text-muted">
-            <span>{user._count.following} following</span>
-            <span>{user._count.followers} followers</span>
-            <span>{user._count.posts} posts</span>
-          </div>
-          <p>{user.bio}</p>
+    <>
+      <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} transparent={!isCurrentUser}>
+        {isCurrentUser ? (
+          <UpdateProfilePictureForm onCancel={() => setIsModalOpen(false)} />
+        ) : (
+          <Avatar username={user.username} src={user.image} size="full" />
+        )}
+      </Modal>
+      <div className="flex flex-col h-full w-full">
+        <div className="w-full relative">
+          <div className="w-full h-48 bg-accent" />
+          <button
+            className={cn('group absolute -bottom-16 left-12 rounded-full overflow-hidden', {
+              'cursor-pointer': user.image,
+            })}
+            onClick={() => user.image && setIsModalOpen(true)}
+          >
+            <Avatar
+              username={user.username}
+              src={user.image}
+              size="profile"
+              className="border-4 border-background"
+            />
+            {isCurrentUser && (
+              <div className="inset-0 absolute bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="w-8 h-8 text-white" />
+              </div>
+            )}
+          </button>
         </div>
-        {session && session.user.username !== user.username && <FollowButton />}
-      </div>
+        <div className="flex gap-1 mt-16 px-4 items-start justify-between">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl font-bold">{user.displayUsername || user.username}</h1>
+            <p className="text-sm text-muted">@{user.username}</p>
+            <div className="flex gap-4 text-sm text-muted">
+              <span>{user._count.following} following</span>
+              <span>{user._count.followers} followers</span>
+              <span>{user._count.posts} posts</span>
+            </div>
+            <p>{user.bio}</p>
+          </div>
+          {session && !isCurrentUser && <FollowButton />}
+        </div>
 
-      <PostsList />
-    </div>
+        <PostsList />
+      </div>
+    </>
   )
 }
