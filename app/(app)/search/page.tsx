@@ -3,7 +3,7 @@
 import { Avatar } from '@/components/common/Avatar'
 import { Search } from '@/components/ui/Search'
 import { searchUsers } from '@/actions/user'
-import { User } from '@/type/User.type'
+import { User } from '@/types/User.type'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -25,8 +25,12 @@ export default function SearchPage() {
   }, [query])
 
   useEffect(() => {
-    handleSearch()
-  }, [query, handleSearch])
+    const debounceTimeout = setTimeout(() => {
+      handleSearch()
+    }, 300)
+
+    return () => clearTimeout(debounceTimeout)
+  }, [handleSearch])
 
   return (
     <div className="flex flex-col justify-center w-full p-2">
@@ -39,7 +43,7 @@ export default function SearchPage() {
               className="flex items-center gap-2 p-2 hover:bg-accent rounded"
             >
               <Avatar username={user.username} src={user.image} size="sm" />
-              <span>{user.displayUsername || user.username}</span>
+              <span>{user.name || user.username}</span>
             </Link>
           ))}
       </Search>

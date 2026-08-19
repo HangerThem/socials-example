@@ -6,10 +6,10 @@ import { LikeButton } from '@/components/actions/LikeButton'
 import { renderMessageContent } from '@/utils/text'
 import { useEffect, useState } from 'react'
 import { formatRelative } from 'date-fns'
-import { Comment } from '@/type/Comment.type'
+import { Comment } from '@/types/Comment.type'
 import { usePost } from '@/context/postContext'
 import { CommentActions } from '../actions/CommentActions'
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/helper/auth-client'
 
 type CommentItemProps = {
   comment: Comment
@@ -33,11 +33,7 @@ export function CommentItem({ comment }: CommentItemProps) {
         >
           <Avatar username={comment.author.username} size="sm" src={comment.author.image} />
           <div className="flex items-center gap-2">
-            <span>
-              {comment.author.displayUsername
-                ? comment.author.displayUsername
-                : comment.author.username}
-            </span>
+            <span>{comment.author.name || comment.author.username}</span>
             <span className="text-xs text-muted">@{comment.author.username}</span>
           </div>
         </Link>

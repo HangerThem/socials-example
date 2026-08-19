@@ -28,7 +28,7 @@ export function OverflowTooltip({ content, className, children }: OverflowToolti
     resizeObserver.observe(el)
 
     return () => resizeObserver.disconnect()
-  }, [children, className])
+  }, [])
 
   return (
     <Tooltip content={content} className="block w-full" disabled={!isOverflowing}>

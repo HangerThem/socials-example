@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
-import { Post } from '@/type/Post.type'
+import { Post } from '@/types/Post.type'
 import { triggerPostLike } from '@/actions/post'
 import {
   createComment,
   triggerCommentLike,
   deleteComment as deleteCommentAction,
 } from '@/actions/comment'
-import { Comment } from '@/type/Comment.type'
+import { Comment } from '@/types/Comment.type'
 
 type PostContextType = {
   post: Post

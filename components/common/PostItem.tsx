@@ -1,6 +1,6 @@
 'use client'
 
-import { PostSimple } from '@/type/Post.type'
+import { PostSimple } from '@/types/Post.type'
 import Link from 'next/link'
 import { Avatar } from '@/components/common/Avatar'
 import { LikeButton } from '@/components/actions/LikeButton'
@@ -52,9 +52,7 @@ export function PostItem({ post, isCurrentUser }: PostItemProps) {
       >
         <Avatar username={post.author.username} src={post.author.image} />
         <div className="flex flex-col">
-          <span>
-            {post.author.displayUsername ? post.author.displayUsername : post.author.username}
-          </span>
+          <span>{post.author.name ? post.author.name : post.author.username}</span>
           <span className="text-xs text-muted">@{post.author.username}</span>
         </div>
       </Link>

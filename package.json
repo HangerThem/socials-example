@@ -16,7 +16,7 @@
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@supabase/supabase-js": "^2.112.3",
-    "better-auth": "^1.6.29",
+    "better-auth": "^1.7.1",
     "check-password-strength": "^3.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

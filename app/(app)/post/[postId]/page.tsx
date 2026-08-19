@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/helper/auth-client'
 import { usePost } from '@/context/postContext'
 import Link from 'next/link'
 import { renderMessageContent } from '@/utils/text'
@@ -52,9 +52,7 @@ export default function PostPage() {
         >
           <Avatar username={post.author.username} src={post.author.image} />
           <div className="flex flex-col">
-            <span>
-              {post.author.displayUsername ? post.author.displayUsername : post.author.username}
-            </span>
+            <span>{post.author.name ? post.author.name : post.author.username}</span>
             <span className="text-xs text-muted">@{post.author.username}</span>
           </div>
         </Link>

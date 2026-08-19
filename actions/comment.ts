@@ -1,14 +1,12 @@
 'use server'
 
 import { commentPagination } from '@/const/pagination'
-import { auth } from '@/lib/auth'
+import { getSession } from '@/helper/auth'
 import { prisma } from '@/lib/prisma'
-import { headers } from 'next/headers'
+import type { Comment } from '@/types/Comment.type'
 
-export async function createComment(postId: string, content: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function createComment(postId: string, content: string): Promise<Comment> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -41,20 +39,16 @@ export async function createComment(postId: string, content: string) {
     },
   })
 
-  const { author, ...commentProps } = comment
-
-  return Object.assign(commentProps, {
-    author: Object.assign(author, {
-      image: author.avatar?.file.path,
+  return Object.assign(comment, {
+    author: Object.assign(comment.author, {
+      image: comment.author.avatar?.file.path ?? null,
     }),
     liked: false,
   })
 }
 
-export async function triggerCommentLike(commentId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function triggerCommentLike(commentId: string): Promise<void> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -81,10 +75,8 @@ export async function triggerCommentLike(commentId: string) {
   }
 }
 
-export async function deleteComment(commentId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function deleteComment(commentId: string): Promise<{ success: boolean }> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -109,10 +101,8 @@ type GetCommentsParams = {
 export async function getComments(
   postId: string,
   { lastCommentId, limit = commentPagination }: GetCommentsParams = {},
-) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+): Promise<Comment[]> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -148,10 +138,9 @@ export async function getComments(
   })
 
   return comments.map((comment) => {
-    const { author, ...commentProps } = comment
-    return Object.assign(commentProps, {
-      author: Object.assign(author, {
-        image: author.avatar?.file.path,
+    return Object.assign(comment, {
+      author: Object.assign(comment.author, {
+        image: comment.author.avatar?.file.path ?? null,
       }),
       liked: comment.commentLikes.some((like) => like.userId === session.user.id),
     })

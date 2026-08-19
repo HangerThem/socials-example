@@ -2,7 +2,7 @@
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
 import { triggerFollow } from '@/actions/user'
-import type { User } from '@/type/User.type'
+import type { User } from '@/types/User.type'
 
 type ProfileContextType = {
   user: User

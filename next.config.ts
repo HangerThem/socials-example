@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   rewrites: async () => {
     return [
       {
-        source: '/media/:path*',
-        destination: '/uploads/:path*',
+        source: '/images/:path*',
+        destination: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/:path*`,
       },
     ]
   },

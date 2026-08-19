@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/utils/cn'
 import Image from 'next/image'
 
@@ -36,18 +38,19 @@ export function Avatar({ username, size = 'md', src, alt, className }: AvatarPro
     >
       {src ? (
         <Image
-          src={src}
+          src={`/images/uploads/${src}`}
           alt={
-            alt || `${username}'${username[username.length - 1] === 's' ? '' : 's'} profile picture`
+            alt || `${username}'${username[0] === 's' ? '' : 's'} profile picture`
           }
           className="object-cover"
+          unoptimized
           fill
         />
       ) : (
         <span
           className={cn('flex items-center justify-center w-full h-full', textSizeClasses[size])}
         >
-          {username?.[0] || 'U'}
+          {username[0].toUpperCase()}
         </span>
       )}
     </div>

@@ -2,7 +2,7 @@
 
 import { FollowButton } from '@/components/actions/FollowButton'
 import { useProfile } from '@/context/profileContext'
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/helper/auth-client'
 import { Avatar } from '@/components/common/Avatar'
 import { PostsList } from '@/components/PostsList'
 import { Modal } from '@/components/modal/Modal'
@@ -54,7 +54,7 @@ export default function ProfilePage() {
         </div>
         <div className="flex gap-1 mt-16 px-4 items-start justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold">{user.displayUsername || user.username}</h1>
+            <h1 className="text-2xl font-bold">{user.name || user.username}</h1>
             <p className="text-sm text-muted">@{user.username}</p>
             <div className="flex gap-4 text-sm text-muted">
               <span>{user._count.following} following</span>

@@ -2,7 +2,7 @@
 
 import { usePosts } from '@/context/postsContext'
 import { PostItem } from './common/PostItem'
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/helper/auth-client'
 import { Button } from './ui/Button'
 
 export function PostsList() {

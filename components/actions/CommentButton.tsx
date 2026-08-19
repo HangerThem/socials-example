@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { commentSchema, type CommentSchema } from '@/schema/Comment.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '../ui/Textarea'
-import { PostSimple } from '@/type/Post.type'
+import { PostSimple } from '@/types/Post.type'
 import { usePosts } from '@/context/postsContext'
 
 type CommentButtonProps = {

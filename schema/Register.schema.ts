@@ -8,21 +8,20 @@ export const registerSchema = z
       .string()
       .min(3, 'Username must be at least 3 characters')
       .max(20, 'Username must be at most 20 characters')
-      .regex(usernameRegex, 'Only letters, numbers, and underscores allowed')
+      .regex(usernameRegex, 'Username can only contain letters, numbers, and underscores')
       .refine(async (username) => await usernameIsUnique(username), {
         message: 'Username is already taken',
       }),
     email: z.email('Enter a valid email').refine(async (email) => await emailIsUnique(email), {
       message: 'Email is already registered',
     }),
-    displayUsername: z.string().max(50).optional(),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
-      .regex(/[A-Z]/, 'Must contain an uppercase letter')
-      .regex(/[0-9]/, 'Must contain a number'),
+      .max(100, 'Password must be at most 100 characters'),
     confirmPassword: z.string(),
     profilePicture: z.instanceof(File).optional(),
+    name: z.string().max(50).optional(),
     bio: z.string().max(160).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {

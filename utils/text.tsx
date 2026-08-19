@@ -57,7 +57,7 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
           <div className="flex items-center gap-2 py-1">
             <Avatar username={user.username} src={user.image} />
             <div className="flex flex-col">
-              <span>{user.displayUsername ? user.displayUsername : user.username}</span>
+              <span>{user.name || user.username}</span>
               <span className="text-xs text-muted">@{user.username}</span>
             </div>
           </div>

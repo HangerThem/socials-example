@@ -1,27 +1,25 @@
 'use server'
 
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { headers } from 'next/headers'
+import { getSession } from '@/helper/auth'
+import type { Follow, User, UserSimple } from '@/types/User.type'
 
-export async function usernameIsUnique(username: string) {
+export async function usernameIsUnique(username: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { username },
   })
   return !user
 }
 
-export async function emailIsUnique(email: string) {
+export async function emailIsUnique(email: string): Promise<boolean> {
   const user = await prisma.user.findUnique({
     where: { email },
   })
   return !user
 }
 
-export async function getUserByUsername(username: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function getUserByUsername(username: string): Promise<User | null> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -63,7 +61,7 @@ export async function getUserByUsername(username: string) {
     prisma.follow.findUnique({
       where: {
         followerId_followingId: {
-          followerId: session.user.id,
+          followerId: user.id,
           followingId: user.id,
         },
       },
@@ -72,7 +70,7 @@ export async function getUserByUsername(username: string) {
       where: {
         followerId_followingId: {
           followerId: user.id,
-          followingId: session.user.id,
+          followingId: user.id,
         },
       },
     }),
@@ -85,10 +83,8 @@ export async function getUserByUsername(username: string) {
   })
 }
 
-export async function triggerFollow(username: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function triggerFollow(username: string): Promise<void> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -135,52 +131,46 @@ export async function triggerFollow(username: string) {
   }
 }
 
-export async function getFollowers(username: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function getFollowers(username: string): Promise<Follow[]> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
   }
 
-  const user = await prisma.user.findUnique({
+  const userWithFollowers = await prisma.user.findUnique({
     where: { username },
     select: { followers: true },
   })
 
-  if (!user) {
+  if (!userWithFollowers) {
     throw new Error('User not found')
   }
 
-  return user.followers
+  return userWithFollowers.followers
 }
 
-export async function getFollowing(username: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function getFollowing(username: string): Promise<Follow[]> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
   }
 
-  const user = await prisma.user.findUnique({
+  const userWithFollowing = await prisma.user.findUnique({
     where: { username },
     select: { following: true },
   })
 
-  if (!user) {
+  if (!userWithFollowing) {
     throw new Error('User not found')
   }
 
-  return user.following
+  return userWithFollowing.following
 }
 
-export async function searchUsers(query: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function searchUsers(query: string): Promise<UserSimple[]> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -188,19 +178,12 @@ export async function searchUsers(query: string) {
 
   const users = await prisma.user.findMany({
     where: {
-      OR: [{ username: { contains: query } }, { displayUsername: { contains: query } }],
+      OR: [{ username: { contains: query } }, { name: { contains: query } }],
     },
     include: {
       avatar: {
         include: {
           file: true,
-        },
-      },
-      _count: {
-        select: {
-          followers: true,
-          following: true,
-          posts: true,
         },
       },
     },
@@ -211,29 +194,10 @@ export async function searchUsers(query: string) {
     return []
   }
 
-  const [isFollowing, isFollower] = await Promise.all([
-    prisma.follow.findMany({
-      where: {
-        followerId: session.user.id,
-        followingId: { in: users.map((user) => user.id) },
-      },
-    }),
-    prisma.follow.findMany({
-      where: {
-        followerId: { in: users.map((user) => user.id) },
-        followingId: session.user.id,
-      },
-    }),
-  ])
-
   return users.map((user) => {
-    const following = isFollowing.some((follow) => follow.followingId === user.id)
-    const follower = isFollower.some((follow) => follow.followerId === user.id)
     const { avatar, ...userProps } = user
     return Object.assign(userProps, {
       image: avatar?.file.path ?? null,
-      isFollowing: following,
-      isFollower: follower,
     })
   })
 }

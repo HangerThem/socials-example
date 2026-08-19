@@ -1,6 +1,7 @@
 'use client'
 
-import { signOut, useSession } from '@/lib/auth-client'
+import { signOut } from '@/lib/auth-client'
+import { useSession } from '@/helper/auth-client'
 import { Home, LogOut, Settings, Search, User, PenSquare } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { redirect } from 'next/navigation'
@@ -29,7 +30,7 @@ export function Sidebar() {
     <aside className="hidden lg:flex justify-end items-start flex-2 shrink-0 border-r border-border h-screen sticky top-0">
       {session && (
         <div className="flex flex-col justify-between items-end mx-8 my-12 gap-12">
-          <Avatar username={session.user.name} src={session.user.image} size="lg" />
+          <Avatar username={session.user.username} src={session.user.image} size="lg" />
 
           <ul className="flex flex-col gap-4 mt-4 items-end">
             {navigation.map((item) => (
@@ -39,7 +40,7 @@ export function Sidebar() {
                   size="medium"
                   rounded="full"
                   {...('href' in item
-                    ? { href: item.href?.replace('{username}', session.user.username || 'user') }
+                    ? { href: item.href?.replace('{username}', session.user.username) }
                     : { onClick: item.onClick })}
                 >
                   <item.icon size={20} />

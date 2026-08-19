@@ -15,7 +15,7 @@ import { FileInput } from '@/components/ui/FileInput'
 import { getSafeCallbackUrl } from '@/utils/safe-redirect'
 import { Textarea } from '../ui/Textarea'
 import { handleUpload } from '@/helper/file'
-import { createAvatarFile } from '@/actions/avatar'
+import { setAvatarFile } from '@/actions/avatar'
 
 type RegisterFormProps = {
   callbackUrl?: string | null
@@ -41,7 +41,7 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
     const { data: signupData, error: signupError } = await signUp.email({
       email: data.email,
       password: data.password,
-      name: data.displayUsername || data.username,
+      name: data.name || data.username,
       username: data.username,
       bio: data.bio,
       callbackURL: getSafeCallbackUrl(callbackUrl),
@@ -55,7 +55,7 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
     if (data.profilePicture && signupData?.user?.id) {
       try {
         const uploadedFile = await handleUpload(data.profilePicture)
-        await createAvatarFile(uploadedFile.fileId)
+        await setAvatarFile(uploadedFile.fileId)
       } catch (error) {
         console.error('Error uploading profile picture:', error)
       }
@@ -63,7 +63,7 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
   }
 
   const moveToProfileStep = () => {
-    trigger(['username', 'email', 'password', 'confirmPassword']).then((isValid) => {
+    trigger(['name', 'email', 'password', 'confirmPassword']).then((isValid) => {
       if (isValid) {
         setOnboardingStep('profile')
       }
@@ -148,11 +148,11 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
             />
 
             <Input
-              label="Display username (optional)"
-              id="displayUsername"
+              label="Name (optional)"
+              id="name"
               type="text"
-              {...register('displayUsername')}
-              error={errors.displayUsername?.message}
+              {...register('name')}
+              error={errors.name?.message}
             />
 
             <Textarea

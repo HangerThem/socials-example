@@ -1,9 +1,8 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { getSession } from '@/helper/auth'
 import { prisma } from '@/lib/prisma'
 import supabase from '@/lib/supabase'
-import { headers } from 'next/headers'
 
 type UploadFileRequest = {
   name: string
@@ -12,10 +11,19 @@ type UploadFileRequest = {
   alt?: string | null
 }
 
-export async function uploadFile({ name, mimetype, size, alt }: UploadFileRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+type UploadFileResponse = {
+  signedUrl: string
+  token: string
+  fileId: string
+}
+
+export async function uploadFile({
+  name,
+  mimetype,
+  size,
+  alt,
+}: UploadFileRequest): Promise<UploadFileResponse> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -23,7 +31,7 @@ export async function uploadFile({ name, mimetype, size, alt }: UploadFileReques
 
   const { data, error } = await supabase.storage
     .from('uploads')
-    .createSignedUploadUrl(`${session.user.name}/${name}`)
+    .createSignedUploadUrl(`${session.user.username}/${name}`)
 
   if (error) {
     throw new Error(`Failed to create signed upload URL: ${error.message}`)
@@ -33,7 +41,7 @@ export async function uploadFile({ name, mimetype, size, alt }: UploadFileReques
 
   const file = await prisma.file.create({
     data: {
-      name: name,
+      name,
       mimetype,
       size,
       path,
@@ -45,10 +53,8 @@ export async function uploadFile({ name, mimetype, size, alt }: UploadFileReques
   return { signedUrl, token, fileId: file.id }
 }
 
-export async function batchUploadFiles(files: UploadFileRequest[]) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function batchUploadFiles(files: UploadFileRequest[]): Promise<UploadFileResponse[]> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -84,10 +90,8 @@ export async function batchUploadFiles(files: UploadFileRequest[]) {
   return Promise.all(uploadPromises)
 }
 
-export async function deleteFile(fileId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function deleteFile(fileId: string): Promise<{ success: boolean }> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -118,10 +122,8 @@ export async function deleteFile(fileId: string) {
   return { success: true }
 }
 
-export async function batchDeleteFiles(fileIds: string[]) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function batchDeleteFiles(fileIds: string[]): Promise<{ success: boolean }> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')

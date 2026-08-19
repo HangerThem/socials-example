@@ -1,21 +1,33 @@
 'use server'
 
-import { auth } from '@/lib/auth'
+import { getSession } from '@/helper/auth'
 import { prisma } from '@/lib/prisma'
-import { headers } from 'next/headers'
 
-export async function createAvatarFile(fileId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function setAvatarFile(fileId: string): Promise<{ success: boolean }> {
+  const session = await getSession()
 
   if (!session?.user?.id) {
     throw new Error('User not authenticated')
   }
 
-  return await prisma.avatarFile.upsert({
-    where: { userId: session.user.id },
-    update: { fileId },
-    create: { userId: session.user.id, fileId },
-  })
+  let avatarFile
+
+  try {
+    avatarFile = await prisma.avatarFile.upsert({
+      where: { userId: session.user.id },
+      update: { fileId },
+      create: {
+        userId: session.user.id,
+        fileId,
+      },
+    })
+  } catch (error) {
+    console.error('Error setting avatar file:', error)
+  }
+
+  if (!avatarFile) {
+    throw new Error('Failed to create avatar file')
+  }
+
+  return { success: true }
 }

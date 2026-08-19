@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
-import { PostSimple } from '@/type/Post.type'
+import { PostSimple } from '@/types/Post.type'
 import { getPosts } from '@/actions/post'
 import { postPagination } from '@/const/pagination'
 import { createComment } from '@/actions/comment'

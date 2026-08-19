@@ -1,15 +1,13 @@
 'use server'
 
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { batchDeleteFiles } from './file'
 import { postPagination } from '@/const/pagination'
+import { getSession } from '@/helper/auth'
+import type { Post } from '@/types/Post.type'
 
-export async function createPost(content: string, fileIds: string[]) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function createPost(content: string, fileIds: string[]): Promise<Post> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -25,9 +23,36 @@ export async function createPost(content: string, fileIds: string[]) {
         })),
       },
     },
+    include: {
+      author: {
+        include: {
+          avatar: {
+            include: {
+              file: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+          likes: true,
+        },
+      },
+      postFiles: {
+        include: {
+          file: true,
+        },
+      },
+    },
   })
 
-  return post
+  return Object.assign(post, {
+    author: Object.assign(post.author, {
+      image: post.author.avatar?.file.path ?? null,
+    }),
+    liked: false,
+  })
 }
 
 type GetPostsParams = {
@@ -40,10 +65,8 @@ export async function getPosts({
   lastPostId,
   limit = postPagination,
   username,
-}: GetPostsParams = {}) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+}: GetPostsParams = {}): Promise<Post[]> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -85,20 +108,19 @@ export async function getPosts({
   })
 
   return posts.map((post) => {
-    const { author, ...postProps } = post
-    return Object.assign(postProps, {
-      author: Object.assign(author, {
-        image: author.avatar?.file.path,
+    return Object.assign(post, {
+      author: Object.assign(post.author, {
+        image: post.author.avatar?.file.path ?? null,
       }),
       liked: post.likes.some((like) => like.userId === session.user.id),
     })
   })
 }
 
-export async function getPost(postId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function getPost(
+  postId: string,
+): Promise<Post> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -139,16 +161,14 @@ export async function getPost(postId: string) {
 
   return Object.assign(postProps, {
     author: Object.assign(author, {
-      image: author.avatar?.file.path,
+      image: author.avatar?.file.path ?? null,
     }),
     liked: post.likes.some((like) => like.userId === session.user.id),
   })
 }
 
-export async function deletePost(postId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function deletePost(postId: string): Promise<{ success: boolean }> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
@@ -170,10 +190,8 @@ export async function deletePost(postId: string) {
   return { success: true }
 }
 
-export async function triggerPostLike(postId: string) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
+export async function triggerPostLike(postId: string): Promise<void> {
+  const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
