@@ -4,7 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
+  schemas  = ["handle_social"]
 }
 
 model User {
@@ -30,6 +31,7 @@ model User {
   accounts Account[]
 
   @@map("users")
+  @@schema("handle_social")
 }
 
 model Session {
@@ -46,6 +48,7 @@ model Session {
   @@unique([token])
   @@index([userId])
   @@map("session")
+  @@schema("handle_social")
 }
 
 model Account {
@@ -66,6 +69,7 @@ model Account {
 
   @@index([userId])
   @@map("account")
+  @@schema("handle_social")
 }
 
 model Verification {
@@ -78,6 +82,7 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+  @@schema("handle_social")
 }
 
 model Follow {
@@ -90,6 +95,7 @@ model Follow {
 
   @@unique([followerId, followingId])
   @@map("follows")
+  @@schema("handle_social")
 }
 
 model Post {
@@ -106,6 +112,7 @@ model Post {
 
   @@index([authorId])
   @@map("posts")
+  @@schema("handle_social")
 }
 
 model Comment {
@@ -122,6 +129,7 @@ model Comment {
 
   @@index([postId])
   @@map("comments")
+  @@schema("handle_social")
 }
 
 model Like {
@@ -133,6 +141,7 @@ model Like {
 
   @@unique([postId, userId])
   @@map("likes")
+  @@schema("handle_social")
 }
 
 model CommentLike {
@@ -144,6 +153,7 @@ model CommentLike {
 
   @@unique([commentId, userId])
   @@map("comment_likes")
+  @@schema("handle_social")
 }
 
 model File {
@@ -153,6 +163,7 @@ model File {
   postFiles PostFile[]
 
   @@map("files")
+  @@schema("handle_social")
 }
 
 model PostFile {
@@ -163,4 +174,5 @@ model PostFile {
 
   @@unique([postId, fileId])
   @@map("post_files")
+  @@schema("handle_social")
 }
