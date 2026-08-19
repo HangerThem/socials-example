@@ -2,12 +2,12 @@
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
 import { Post } from '@/type/Post.type'
-import { triggerPostLike } from '@/server-actions/post'
+import { triggerPostLike } from '@/actions/post'
 import {
   createComment,
   triggerCommentLike,
   deleteComment as deleteCommentAction,
-} from '@/server-actions/comment'
+} from '@/actions/comment'
 import { Comment } from '@/type/Comment.type'
 
 type PostContextType = {

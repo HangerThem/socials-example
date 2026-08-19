@@ -2,9 +2,9 @@
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
 import { PostSimple } from '@/type/Post.type'
-import { getPosts } from '@/server-actions/post'
+import { getPosts } from '@/actions/post'
 import { postPagination } from '@/const/pagination'
-import { createComment } from '@/server-actions/comment'
+import { createComment } from '@/actions/comment'
 
 type PostsContextType = {
   posts: PostSimple[]

@@ -30,6 +30,11 @@ export async function getUserByUsername(username: string) {
   const user = await prisma.user.findUnique({
     where: { username },
     include: {
+      avatar: {
+        include: {
+          file: true,
+        },
+      },
       _count: {
         select: {
           followers: true,
@@ -44,8 +49,14 @@ export async function getUserByUsername(username: string) {
     return null
   }
 
+  const { avatar, ...userProps } = user
+
   if (session.user.username === username) {
-    return Object.assign(user, { isFollowing: false, isFollower: false })
+    return Object.assign(userProps, {
+      image: avatar?.file.path ?? null,
+      isFollowing: false,
+      isFollower: false,
+    })
   }
 
   const [isFollowing, isFollower] = await Promise.all([
@@ -67,7 +78,11 @@ export async function getUserByUsername(username: string) {
     }),
   ])
 
-  return Object.assign(user, { isFollowing: !!isFollowing, isFollower: !!isFollower })
+  return Object.assign(userProps, {
+    image: avatar?.file.path ?? null,
+    isFollowing: !!isFollowing,
+    isFollower: !!isFollower,
+  })
 }
 
 export async function triggerFollow(username: string) {
@@ -176,6 +191,11 @@ export async function searchUsers(query: string) {
       OR: [{ username: { contains: query } }, { displayUsername: { contains: query } }],
     },
     include: {
+      avatar: {
+        include: {
+          file: true,
+        },
+      },
       _count: {
         select: {
           followers: true,
@@ -209,6 +229,11 @@ export async function searchUsers(query: string) {
   return users.map((user) => {
     const following = isFollowing.some((follow) => follow.followingId === user.id)
     const follower = isFollower.some((follow) => follow.followerId === user.id)
-    return Object.assign(user, { isFollowing: following, isFollower: follower })
+    const { avatar, ...userProps } = user
+    return Object.assign(userProps, {
+      image: avatar?.file.path ?? null,
+      isFollowing: following,
+      isFollower: follower,
+    })
   })
 }

@@ -6,10 +6,10 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { FileInput } from '../ui/FileInput'
 import { Textarea } from '../ui/Textarea'
-import { batchUploadFiles } from '@/server-actions/file'
-import { createPost } from '@/server-actions/post'
+import { createPost } from '@/actions/post'
 import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
+import { handleBatchUpload } from '@/helper/file'
 
 export function CreateForm() {
   const [serverError, setServerError] = useState<string | null>(null)
@@ -33,13 +33,18 @@ export function CreateForm() {
         formData.append('alts', fileItem.alt ?? '')
       })
 
-      const uploadResponse = await batchUploadFiles(formData)
-      if (Array.isArray(uploadResponse)) {
-        fileIds = uploadResponse
-          .filter((file) => 'id' in file)
-          .map((file) => (file as { id: string }).id)
-      } else {
-        setServerError(uploadResponse.error || 'File upload failed')
+      try {
+        const uploadResponse = await handleBatchUpload(data.files)
+        if (Array.isArray(uploadResponse)) {
+          fileIds = uploadResponse
+            .filter((file) => 'fileId' in file)
+            .map((file) => (file as { fileId: string }).fileId)
+        } else {
+          setServerError(uploadResponse || 'File upload failed')
+          return
+        }
+      } catch (error: any) {
+        setServerError(error.message || 'File upload failed')
         return
       }
     }

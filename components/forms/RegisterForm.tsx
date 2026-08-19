@@ -8,13 +8,14 @@ import { signUp } from '@/lib/auth-client'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
-import { uploadFile } from '@/server-actions/file'
 import { passwordStrength } from 'check-password-strength'
 import { motion } from 'framer-motion'
 import { ChevronLeft } from 'lucide-react'
 import { FileInput } from '@/components/ui/FileInput'
 import { getSafeCallbackUrl } from '@/utils/safe-redirect'
 import { Textarea } from '../ui/Textarea'
+import { handleUpload } from '@/helper/file'
+import { createAvatarFile } from '@/actions/avatar'
 
 type RegisterFormProps = {
   callbackUrl?: string | null
@@ -37,38 +38,27 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
   const onSubmit = async (data: RegisterSchema) => {
     setServerError(null)
 
-    let profilePicture: string | undefined = undefined
-
-    if (data.profilePicture) {
-      try {
-        const formData = new FormData()
-        formData.append('avatar', data.profilePicture)
-        const uploadedFile = await uploadFile(formData)
-        if ('error' in uploadedFile) {
-          setServerError(uploadedFile.error)
-          return
-        }
-        profilePicture = uploadedFile.url
-      } catch (error) {
-        console.error('Error uploading profile picture:', error)
-        setServerError('Failed to upload profile picture. Please try again.')
-        return
-      }
-    }
-
-    const { error } = await signUp.email({
+    const { data: signupData, error: signupError } = await signUp.email({
       email: data.email,
       password: data.password,
       name: data.displayUsername || data.username,
       username: data.username,
-      image: profilePicture,
       bio: data.bio,
       callbackURL: getSafeCallbackUrl(callbackUrl),
     })
 
-    if (error) {
-      setServerError(error.message ?? 'Something went wrong. Please try again.')
+    if (signupError) {
+      setServerError(signupError.message ?? 'Something went wrong. Please try again.')
       return
+    }
+
+    if (data.profilePicture && signupData?.user?.id) {
+      try {
+        const uploadedFile = await handleUpload(data.profilePicture)
+        await createAvatarFile(uploadedFile.fileId)
+      } catch (error) {
+        console.error('Error uploading profile picture:', error)
+      }
     }
   }
 

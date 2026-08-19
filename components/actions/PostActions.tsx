@@ -3,7 +3,7 @@
 import { EllipsisVertical, Pencil, Trash2 } from 'lucide-react'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { Button } from '@/components/ui/Button'
-import { deletePost } from '@/server-actions/post'
+import { deletePost } from '@/actions/post'
 import { Modal } from '../modal/Modal'
 import { useState } from 'react'
 

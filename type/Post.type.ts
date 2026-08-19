@@ -1,4 +1,4 @@
-import { getPost, getPosts } from '@/server-actions/post'
+import { getPost, getPosts } from '@/actions/post'
 
 export type PostSimple = NonNullable<Awaited<ReturnType<typeof getPosts>>>[number]
 

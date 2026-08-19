@@ -60,7 +60,15 @@ export async function getPosts({
           file: true,
         },
       },
-      author: true,
+      author: {
+        include: {
+          avatar: {
+            include: {
+              file: true,
+            },
+          },
+        },
+      },
       likes: true,
       _count: {
         select: {
@@ -76,9 +84,15 @@ export async function getPosts({
     take: limit,
   })
 
-  return posts.map((post) =>
-    Object.assign(post, { liked: post.likes.some((like) => like.userId === session.user.id) }),
-  )
+  return posts.map((post) => {
+    const { author, ...postProps } = post
+    return Object.assign(postProps, {
+      author: Object.assign(author, {
+        image: author.avatar?.file.path,
+      }),
+      liked: post.likes.some((like) => like.userId === session.user.id),
+    })
+  })
 }
 
 export async function getPost(postId: string) {
@@ -98,7 +112,15 @@ export async function getPost(postId: string) {
           file: true,
         },
       },
-      author: true,
+      author: {
+        include: {
+          avatar: {
+            include: {
+              file: true,
+            },
+          },
+        },
+      },
       likes: true,
       _count: {
         select: {
@@ -113,7 +135,12 @@ export async function getPost(postId: string) {
     throw new Error('Post not found')
   }
 
-  return Object.assign(post, {
+  const { author, ...postProps } = post
+
+  return Object.assign(postProps, {
+    author: Object.assign(author, {
+      image: author.avatar?.file.path,
+    }),
     liked: post.likes.some((like) => like.userId === session.user.id),
   })
 }

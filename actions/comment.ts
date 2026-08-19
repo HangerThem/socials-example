@@ -23,7 +23,15 @@ export async function createComment(postId: string, content: string) {
       },
     },
     include: {
-      author: true,
+      author: {
+        include: {
+          avatar: {
+            include: {
+              file: true,
+            },
+          },
+        },
+      },
       commentLikes: true,
       _count: {
         select: {
@@ -33,7 +41,14 @@ export async function createComment(postId: string, content: string) {
     },
   })
 
-  return Object.assign(comment, { liked: false })
+  const { author, ...commentProps } = comment
+
+  return Object.assign(commentProps, {
+    author: Object.assign(author, {
+      image: author.avatar?.file.path,
+    }),
+    liked: false,
+  })
 }
 
 export async function triggerCommentLike(commentId: string) {
@@ -109,7 +124,15 @@ export async function getComments(
     },
     orderBy: { createdAt: 'desc' },
     include: {
-      author: true,
+      author: {
+        include: {
+          avatar: {
+            include: {
+              file: true,
+            },
+          },
+        },
+      },
       commentLikes: true,
       _count: {
         select: {
@@ -124,9 +147,13 @@ export async function getComments(
     take: limit,
   })
 
-  return comments.map((comment) =>
-    Object.assign(comment, {
+  return comments.map((comment) => {
+    const { author, ...commentProps } = comment
+    return Object.assign(commentProps, {
+      author: Object.assign(author, {
+        image: author.avatar?.file.path,
+      }),
       liked: comment.commentLikes.some((like) => like.userId === session.user.id),
-    }),
-  )
+    })
+  })
 }

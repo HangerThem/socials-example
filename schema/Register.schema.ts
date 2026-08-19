@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { usernameIsUnique, emailIsUnique } from '@/server-actions/user'
+import { usernameIsUnique, emailIsUnique } from '@/actions/user'
 import { usernameRegex } from '@/const/usernameRegex'
 
 export const registerSchema = z

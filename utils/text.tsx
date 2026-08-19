@@ -6,7 +6,7 @@ import { mentionRegex } from '@/const/mentionRegex'
 import { tagRegex } from '@/const/tagRegex'
 import { urlRegex } from '@/const/urlRegex'
 import Tooltip from '@/components/ui/Tooltip'
-import { getUserByUsername } from '@/server-actions/user'
+import { getUserByUsername } from '@/actions/user'
 import { Avatar } from '@/components/common/Avatar'
 
 type Token = {

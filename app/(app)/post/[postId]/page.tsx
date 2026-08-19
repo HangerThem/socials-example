@@ -64,7 +64,7 @@ export default function PostPage() {
             {post.postFiles.map((postFile) => (
               <img
                 key={postFile.file.id}
-                src={postFile.file.url}
+                src={postFile.file.path}
                 alt={postFile.file.alt ?? ''}
                 className="max-w-xs max-h-60 object-cover rounded"
               />

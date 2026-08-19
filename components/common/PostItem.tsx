@@ -9,7 +9,7 @@ import { PostActions } from '@/components/actions/PostActions'
 import { renderMessageContent } from '@/utils/text'
 import { useEffect, useState } from 'react'
 import { formatRelative } from 'date-fns'
-import { triggerPostLike } from '@/server-actions/post'
+import { triggerPostLike } from '@/actions/post'
 import { useRouter } from 'next/navigation'
 
 type PostItemProps = {
@@ -64,7 +64,7 @@ export function PostItem({ post, isCurrentUser }: PostItemProps) {
           {post.postFiles.map((postFile) => (
             <img
               key={postFile.file.id}
-              src={postFile.file.url}
+              src={postFile.file.path}
               alt={postFile.file.alt ?? ''}
               className="max-w-xs max-h-60 object-cover rounded"
             />

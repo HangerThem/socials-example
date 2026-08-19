@@ -1,4 +1,4 @@
-import { getPosts } from '@/server-actions/post'
+import { getPosts } from '@/actions/post'
 import { PostsProvider } from '@/context/postsContext'
 import { PostsList } from '@/components/PostsList'
 

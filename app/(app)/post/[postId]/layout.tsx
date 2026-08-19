@@ -1,6 +1,6 @@
 import { PostProvider } from '@/context/postContext'
-import { getComments } from '@/server-actions/comment'
-import { getPost } from '@/server-actions/post'
+import { getComments } from '@/actions/comment'
+import { getPost } from '@/actions/post'
 
 export default async function ProfileLayout({ params, children }: LayoutProps<'/post/[postId]'>) {
   const { postId } = await params

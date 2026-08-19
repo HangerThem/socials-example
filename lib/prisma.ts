@@ -1,5 +1,5 @@
 import { PrismaClient } from '@/generated/prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 function getDatabaseUrl() {
   const url = process.env.DATABASE_URL
@@ -10,10 +10,10 @@ function getDatabaseUrl() {
 }
 
 function createPrismaClient() {
-  const adapter = new PrismaBetterSqlite3({ url: getDatabaseUrl() })
+  const adapter = new PrismaPg({ connectionString: getDatabaseUrl() })
   const client = new PrismaClient({ adapter })
 
-  // SQLite defaults are conservative for concurrent access from a
+  // PostgreSQL defaults are conservative for concurrent access from a
   // Node server — set these per-connection at startup.
   // WAL: readers don't block writers and vice versa (default is
   // DELETE mode, which single-locks the whole file per write).
@@ -36,8 +36,8 @@ if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
 }
 
-// SQLite holds an open file handle + WAL/SHM files. Close it on
-// process exit so the server doesn't leave dangling locks.
+// PostgreSQL holds an open connection. Close it on
+// process exit so the server doesn't leave dangling connections.
 if (process.env.NODE_ENV === 'production') {
   const shutdown = async () => {
     await prisma.$disconnect()

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
-import { triggerFollow } from '@/server-actions/user'
+import { triggerFollow } from '@/actions/user'
 import type { User } from '@/type/User.type'
 
 type ProfileContextType = {

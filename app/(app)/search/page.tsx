@@ -2,7 +2,7 @@
 
 import { Avatar } from '@/components/common/Avatar'
 import { Search } from '@/components/ui/Search'
-import { searchUsers } from '@/server-actions/user'
+import { searchUsers } from '@/actions/user'
 import { User } from '@/type/User.type'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'

@@ -13,8 +13,9 @@
   "dependencies": {
     "@floating-ui/react": "^0.27.20",
     "@hookform/resolvers": "^5.9.0",
-    "@prisma/adapter-better-sqlite3": "^7.9.1",
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "@supabase/supabase-js": "^2.112.3",
     "better-auth": "^1.6.29",
     "check-password-strength": "^3.0.0",
     "clsx": "^2.1.1",

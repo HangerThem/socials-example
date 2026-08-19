@@ -1,7 +1,7 @@
-import { getUserByUsername } from '@/server-actions/user'
+import { getUserByUsername } from '@/actions/user'
 import { ProfileProvider } from '@/context/profileContext'
 import { PostsProvider } from '@/context/postsContext'
-import { getPosts } from '@/server-actions/post'
+import { getPosts } from '@/actions/post'
 
 export default async function ProfileLayout({
   params,
