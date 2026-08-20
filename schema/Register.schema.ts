@@ -20,9 +20,6 @@ export const registerSchema = z
       .min(8, 'Password must be at least 8 characters')
       .max(100, 'Password must be at most 100 characters'),
     confirmPassword: z.string(),
-    profilePicture: z.instanceof(File).optional(),
-    name: z.string().max(50).optional(),
-    bio: z.string().max(160).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

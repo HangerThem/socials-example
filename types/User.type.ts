@@ -19,5 +19,3 @@ export type User = Prisma.UserGetPayload<{
   isFollowing: boolean
   isFollower: boolean
 }
-
-export type Follow = Prisma.FollowGetPayload<{}>

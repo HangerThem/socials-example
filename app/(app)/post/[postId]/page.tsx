@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form'
 import { commentSchema, CommentSchema } from '@/schema/Comment.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CommentItem } from '@/components/common/CommentItem'
+import Image from 'next/image'
 
 export default function PostPage() {
   const { post, toggleLike, comments, postComment } = usePost()
@@ -58,14 +59,19 @@ export default function PostPage() {
         </Link>
         <div className="whitespace-pre-wrap">{content}</div>
         {post.postFiles.length > 0 && (
-          <div className="mt-2 flex gap-2">
+          <div className="mt-1 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
             {post.postFiles.map((postFile) => (
-              <img
-                key={postFile.file.id}
-                src={postFile.file.path}
-                alt={postFile.file.alt ?? ''}
-                className="max-w-xs max-h-60 object-cover rounded"
-              />
+              <div
+                className="group relative w-full h-auto aspect-square rounded-lg overflow-hidden border border-border"
+                key={postFile.fileId}
+              >
+                <Image
+                  src={`/images/uploads/${postFile.file.path}`}
+                  alt={postFile.file.alt ?? ''}
+                  className="object-cover rounded"
+                  fill
+                />
+              </div>
             ))}
           </div>
         )}

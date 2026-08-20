@@ -1,31 +1,28 @@
 'use client'
 
-import { PostSimple } from '@/types/Post.type'
+import type { Post } from '@/types/Post.type'
 import Link from 'next/link'
 import { Avatar } from '@/components/common/Avatar'
 import { LikeButton } from '@/components/actions/LikeButton'
 import { CommentButton } from '@/components/actions/CommentButton'
 import { PostActions } from '@/components/actions/PostActions'
-import { renderMessageContent } from '@/utils/text'
-import { useEffect, useState } from 'react'
+import { use, useState } from 'react'
 import { formatRelative } from 'date-fns'
 import { triggerPostLike } from '@/actions/post'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 type PostItemProps = {
-  post: PostSimple
+  post: Post
+  contentPromise: Promise<React.ReactNode[]>
   isCurrentUser: boolean
 }
 
-export function PostItem({ post, isCurrentUser }: PostItemProps) {
+export function PostItem({ post, contentPromise, isCurrentUser }: PostItemProps) {
   const [liked, setLiked] = useState(post.liked)
   const [likes, setLikes] = useState(post._count.likes)
-  const [content, setContent] = useState<React.ReactNode[]>([])
+  const content = use(contentPromise)
   const router = useRouter()
-
-  useEffect(() => {
-    renderMessageContent(post.content).then(setContent)
-  }, [post.content])
 
   const handleLike = async () => {
     const originalState = { liked, likes }
@@ -58,14 +55,19 @@ export function PostItem({ post, isCurrentUser }: PostItemProps) {
       </Link>
       <div className="whitespace-pre-wrap">{content}</div>
       {post.postFiles.length > 0 && (
-        <div className="mt-2 flex gap-2">
+        <div className="mt-1 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
           {post.postFiles.map((postFile) => (
-            <img
-              key={postFile.file.id}
-              src={postFile.file.path}
-              alt={postFile.file.alt ?? ''}
-              className="max-w-xs max-h-60 object-cover rounded"
-            />
+            <div
+              className="group relative w-full h-auto aspect-square rounded-lg overflow-hidden border border-border"
+              key={postFile.fileId}
+            >
+              <Image
+                src={`/images/uploads/${postFile.file.path}`}
+                alt={postFile.file.alt ?? ''}
+                className="object-cover rounded"
+                fill
+              />
+            </div>
           ))}
         </div>
       )}

@@ -24,6 +24,9 @@ export function CreateForm() {
     resolver: zodResolver(postSchema),
   })
 
+  const content = watch('content')
+  const contentLength = content ? content.length : 0
+
   const onSubmit = async (data: PostSchema) => {
     let fileIds: string[] = []
     if (data.files && data.files.length > 0) {
@@ -43,8 +46,8 @@ export function CreateForm() {
           setServerError(uploadResponse || 'File upload failed')
           return
         }
-      } catch (error: any) {
-        setServerError(error.message || 'File upload failed')
+      } catch (error) {
+        setServerError(error instanceof Error ? error.message : 'File upload failed')
         return
       }
     }
@@ -53,15 +56,15 @@ export function CreateForm() {
       const res = await createPost(data.content, fileIds)
       router.push(`/post/${res.id}`)
       // oxlint-disable-next-line typescript/no-explicit-any
-    } catch (error: any) {
-      setServerError(error.message || 'Failed to create post')
+    } catch (error) {
+      setServerError(error instanceof Error ? error.message : 'Failed to create post')
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <Textarea
-        label={`Content (${watch('content')?.length ?? 0}/280)`}
+        label={`Content (${contentLength}/280)`}
         error={errors.content?.message}
         maxLength={280}
         {...register('content')}

@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useContext, createContext, useMemo, useCallback } from 'react'
-import { PostSimple } from '@/types/Post.type'
+import type { Post } from '@/types/Post.type'
 import { getPosts } from '@/actions/post'
 import { postPagination } from '@/const/pagination'
 import { createComment } from '@/actions/comment'
 
 type PostsContextType = {
-  posts: PostSimple[]
+  posts: Post[]
   hasMore: boolean
   isLoadingMore: boolean
   loadMorePosts: () => Promise<void>
@@ -21,7 +21,7 @@ export const PostsProvider = ({
   username,
   children,
 }: {
-  posts: PostSimple[]
+  posts: Post[]
   username?: string
   children: React.ReactNode
 }) => {

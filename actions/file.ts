@@ -65,7 +65,7 @@ export async function batchUploadFiles(files: UploadFileRequest[]): Promise<Uplo
 
     const { data, error } = await supabase.storage
       .from('uploads')
-      .createSignedUploadUrl(`${session.user.name}/${name}`)
+      .createSignedUploadUrl(`${session.user.username}/${name}`)
 
     if (error) {
       throw new Error(`Failed to create signed upload URL for ${name}: ${error.message}`)

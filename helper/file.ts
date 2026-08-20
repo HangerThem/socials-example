@@ -11,10 +11,18 @@ export async function handleUpload(file: File, alt?: string | null) {
   const response = await fetch(signedUrl, {
     method: 'PUT',
     body: file,
-    headers: { 'Content-Type': file.type },
+    headers: {
+      'Content-Type': file.type,
+    },
   })
 
   if (!response.ok) {
+    const text = await response.text()
+    console.error('Upload failed:', {
+      status: response.status,
+      statusText: response.statusText,
+      body: text,
+    })
     throw new Error(`Failed to upload file: ${response.statusText}`)
   }
 

@@ -2,6 +2,7 @@ import { getUserByUsername } from '@/actions/user'
 import { ProfileProvider } from '@/context/profileContext'
 import { PostsProvider } from '@/context/postsContext'
 import { getPosts } from '@/actions/post'
+import { ProfileHeader } from '@/components/layout/ProfileHeader'
 
 export default async function ProfileLayout({
   params,
@@ -17,7 +18,10 @@ export default async function ProfileLayout({
 
   return (
     <PostsProvider posts={posts} username={username}>
-      <ProfileProvider user={user}>{children}</ProfileProvider>
+      <ProfileProvider user={user}>
+        <ProfileHeader />
+        {children}
+      </ProfileProvider>
     </PostsProvider>
   )
 }

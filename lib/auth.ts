@@ -15,11 +15,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  user: {
-    additionalFields: {
-      bio: { type: 'string', required: false },
-    },
-  },
   plugins: [
     username({
       displayUsername: false,
@@ -38,6 +33,7 @@ export const auth = betterAuth({
         user: {
           ...user,
           image: extra.avatar?.file?.path || null,
+          bio: extra.bio || null,
         },
         session,
       }

@@ -3,13 +3,13 @@
 import { Avatar } from '@/components/common/Avatar'
 import { Search } from '@/components/ui/Search'
 import { searchUsers } from '@/actions/user'
-import { User } from '@/types/User.type'
+import type { UserSimple } from '@/types/User.type'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 export default function SearchPage() {
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<User[]>([])
+  const [results, setResults] = useState<UserSimple[]>([])
 
   const handleSearch = useCallback(async () => {
     if (!query) {
