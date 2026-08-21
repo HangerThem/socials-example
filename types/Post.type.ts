@@ -20,4 +20,5 @@ export type Post = Prisma.PostGetPayload<{
   author: {
     image: string | null
   }
+  processedContent: React.ReactNode[]
 }

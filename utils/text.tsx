@@ -1,13 +1,10 @@
-'use client'
-
 import { Fragment, type ReactNode } from 'react'
 import Link from 'next/link'
 import { mentionRegex } from '@/const/mentionRegex'
 import { tagRegex } from '@/const/tagRegex'
 import { urlRegex } from '@/const/urlRegex'
-import Tooltip from '@/components/ui/Tooltip'
-import { getUserByUsername } from '@/actions/user'
-import { Avatar } from '@/components/common/Avatar'
+import { getUsersByUsernames } from '@/actions/user'
+import { MentionItem } from '@/components/common/MentionItem'
 
 type Token = {
   start: number
@@ -18,6 +15,21 @@ type Token = {
 
 export async function renderMessageContent(text: string): Promise<ReactNode[]> {
   const tokens: Token[] = []
+
+  // First pass: collect all mention usernames
+  const mentionUsernames = new Set<string>()
+  let mentionMatch: RegExpExecArray | null
+  const mentionRegexGlobal = new RegExp(
+    mentionRegex.source,
+    mentionRegex.flags.includes('g') ? mentionRegex.flags : mentionRegex.flags + 'g',
+  )
+  while ((mentionMatch = mentionRegexGlobal.exec(text)) !== null) {
+    mentionUsernames.add(mentionMatch[1])
+  }
+
+  // Batch fetch all users at once
+  const users = await getUsersByUsernames(Array.from(mentionUsernames))
+  const userMap = new Map(users.map((u) => [u.username, u]))
 
   const collect = (regex: RegExp, type: string, render: (match: RegExpExecArray) => ReactNode) => {
     const re = new RegExp(regex.source, regex.flags.includes('g') ? regex.flags : regex.flags + 'g')
@@ -43,31 +55,15 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
     )
   })
 
-  collect(mentionRegex, 'mention', async (match) => {
-    const id = match[1]
-    const user = await getUserByUsername(id)
+  collect(mentionRegex, 'mention', (match) => {
+    const username = match[1]
+    const user = userMap.get(username)
 
     if (!user) {
       return <span className="post-mention">{match[0]}</span>
     }
 
-    return (
-      <Tooltip
-        content={
-          <div className="flex items-center gap-2 py-1">
-            <Avatar username={user.username} src={user.image} />
-            <div className="flex flex-col">
-              <span>{user.name || user.username}</span>
-              <span className="text-xs text-muted">@{user.username}</span>
-            </div>
-          </div>
-        }
-      >
-        <Link href={`/profile/${id}`} className="post-mention" onClick={(e) => e.stopPropagation()}>
-          {match[0] || 'Smazaný uživatel'}
-        </Link>
-      </Tooltip>
-    )
+    return <MentionItem key={user.username} user={user} />
   })
 
   collect(tagRegex, 'tag', (match) => <span className="post-tag">{match[1]}</span>)
@@ -87,8 +83,14 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
   const pushText = (chunk: string, keyBase: string) => {
     const lines = chunk.split('\n')
     lines.forEach((line, i) => {
-      if (line) nodes.push(<Fragment key={`${keyBase}-line-${line}-${i}`}>{line}</Fragment>)
-      if (i < lines.length - 1) nodes.push(<br key={`${keyBase}-br-${i}`} />)
+      if (line) {
+        const hash = Buffer.from(line).toString('base64').substring(0, 8)
+        const lineKey = `${keyBase}-${pos}-${hash}`
+        nodes.push(<Fragment key={lineKey}>{line}</Fragment>)
+      }
+      if (i < lines.length - 1) {
+        nodes.push(<br key={`${keyBase}-br-${pos + i}`} />)
+      }
     })
   }
 

@@ -21,7 +21,6 @@ type CommentButtonProps = {
 }
 
 export function CommentButton({ post, comments }: CommentButtonProps) {
-  const [content, setContent] = useState<React.ReactNode[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const { postComment } = usePosts()
 
@@ -35,10 +34,6 @@ export function CommentButton({ post, comments }: CommentButtonProps) {
     },
     resolver: zodResolver(commentSchema),
   })
-
-  useEffect(() => {
-    renderMessageContent(post.content).then(setContent)
-  }, [post.content])
 
   const onSubmit = (data: CommentSchema) => {
     postComment(post.id, data.content)
@@ -60,7 +55,7 @@ export function CommentButton({ post, comments }: CommentButtonProps) {
               <span className="text-xs text-muted">@{post.author.username}</span>
             </div>
           </Link>
-          <div className="whitespace-pre-wrap">{content}</div>
+          <div className="whitespace-pre-wrap">{post.processedContent}</div>
           {post.postFiles.length > 0 && (
             <div className="mt-2 flex gap-2">
               {post.postFiles.map((postFile) => (

@@ -6,7 +6,7 @@ import { Avatar } from '@/components/common/Avatar'
 import { LikeButton } from '@/components/actions/LikeButton'
 import { CommentButton } from '@/components/actions/CommentButton'
 import { PostActions } from '@/components/actions/PostActions'
-import { use, useState } from 'react'
+import { useState } from 'react'
 import { formatRelative } from 'date-fns'
 import { triggerPostLike } from '@/actions/post'
 import { useRouter } from 'next/navigation'
@@ -14,14 +14,12 @@ import Image from 'next/image'
 
 type PostItemProps = {
   post: Post
-  contentPromise: Promise<React.ReactNode[]>
   isCurrentUser: boolean
 }
 
-export function PostItem({ post, contentPromise, isCurrentUser }: PostItemProps) {
+export function PostItem({ post, isCurrentUser }: PostItemProps) {
   const [liked, setLiked] = useState(post.liked)
   const [likes, setLikes] = useState(post._count.likes)
-  const content = use(contentPromise)
   const router = useRouter()
 
   const handleLike = async () => {
@@ -36,10 +34,9 @@ export function PostItem({ post, contentPromise, isCurrentUser }: PostItemProps)
       console.error('Error liking post:', error)
     }
   }
-
   return (
     <article
-      className="post-item block first:border-y border-b border-border p-4 cursor-pointer"
+      className="post-item block border-b border-border p-4 cursor-pointer"
       onClick={() => router.push(`/post/${post.id}`)}
     >
       <Link
@@ -53,7 +50,7 @@ export function PostItem({ post, contentPromise, isCurrentUser }: PostItemProps)
           <span className="text-xs text-muted">@{post.author.username}</span>
         </div>
       </Link>
-      <div className="whitespace-pre-wrap">{content}</div>
+      <div className="whitespace-pre-wrap">{post.processedContent}</div>
       {post.postFiles.length > 0 && (
         <div className="mt-1 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
           {post.postFiles.map((postFile) => (

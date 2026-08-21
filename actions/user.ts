@@ -231,3 +231,23 @@ export async function searchUsers(query: string): Promise<UserSimple[]> {
     })
   })
 }
+
+export async function getUsersByUsernames(usernames: string[]): Promise<UserSimple[]> {
+  const users = await prisma.user.findMany({
+    where: { username: { in: usernames } },
+    include: {
+      avatar: {
+        include: {
+          file: true,
+        },
+      },
+    },
+  })
+
+  return users.map((user) => {
+    const { avatar, ...userProps } = user
+    return Object.assign(userProps, {
+      image: avatar?.file.path ?? null,
+    })
+  })
+}

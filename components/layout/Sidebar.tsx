@@ -1,30 +1,24 @@
-'use client'
-
-import { signOut } from '@/lib/auth-client'
-import { useSession } from '@/helper/auth-client'
-import { Home, LogOut, Settings, Search, User, PenSquare } from 'lucide-react'
+import { Home, Settings, Search, User, PenSquare, LogOut } from 'lucide-react'
 import { Button } from '../ui/Button'
-import { redirect } from 'next/navigation'
 import { Avatar } from '../common/Avatar'
+import { getSession } from '@/helper/auth'
 
-type NavigationItemBase = {
+type NavigationItem = {
   name: string
+  href: string
   icon: React.ComponentType<{ size?: number }>
 }
-
-type NavigationItem = NavigationItemBase &
-  ({ href: string; onClick?: never } | { href?: never; onClick: () => void })
 
 const navigation: NavigationItem[] = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Profile', href: '/profile/{username}', icon: User },
   { name: 'Search', href: '/search', icon: Search },
   { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Logout', onClick: () => signOut().then(() => redirect('/')), icon: LogOut },
+  { name: 'Logout', href: '/logout', icon: LogOut },
 ]
 
-export function Sidebar() {
-  const { data: session } = useSession()
+export async function Sidebar() {
+  const session = await getSession()
 
   return (
     <aside className="hidden lg:flex justify-end items-start flex-2 shrink-0 border-r border-border h-screen sticky top-0">
@@ -39,9 +33,7 @@ export function Sidebar() {
                   variant="ghost"
                   size="medium"
                   rounded="full"
-                  {...('href' in item
-                    ? { href: item.href?.replace('{username}', session.user.username) }
-                    : { onClick: item.onClick })}
+                  href={item.href.replace('{username}', session.user.username)}
                 >
                   <item.icon size={20} />
                   {item.name}

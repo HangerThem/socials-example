@@ -12,8 +12,8 @@ export default async function AppLayout({ children, modal }: LayoutProps<'/'>) {
   return (
     <div className="min-h-full flex">
       <Sidebar />
-      <main className="flex-4">{children}</main>
-      <div className="flex-2" />
+      <main className="flex-3">{children}</main>
+      <div className="flex-2 border-l border-border" />
       {modal}
     </div>
   )

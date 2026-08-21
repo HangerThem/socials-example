@@ -5,6 +5,7 @@ import { batchDeleteFiles } from './file'
 import { postPagination } from '@/const/pagination'
 import { getSession } from '@/helper/auth'
 import type { Post } from '@/types/Post.type'
+import { renderMessageContent } from '@/utils/text'
 
 export async function createPost(content: string, fileIds: string[]): Promise<Post> {
   const session = await getSession()
@@ -51,6 +52,7 @@ export async function createPost(content: string, fileIds: string[]): Promise<Po
     author: Object.assign(post.author, {
       image: post.author.avatar?.file.path ?? null,
     }),
+    processedContent: await renderMessageContent(post.content),
     liked: false,
   })
 }
@@ -107,7 +109,15 @@ export async function getPosts({
     take: limit,
   })
 
-  return posts.map((post) => {
+  const postsWithProcessedContent = await Promise.all(
+    posts.map(async (post) =>
+      Object.assign(post, {
+        processedContent: await renderMessageContent(post.content),
+      }),
+    ),
+  )
+
+  return postsWithProcessedContent.map((post) => {
     return Object.assign(post, {
       author: Object.assign(post.author, {
         image: post.author.avatar?.file.path ?? null,
@@ -117,9 +127,7 @@ export async function getPosts({
   })
 }
 
-export async function getPost(
-  postId: string,
-): Promise<Post> {
+export async function getPost(postId: string): Promise<Post> {
   const session = await getSession()
 
   if (!session) {
@@ -163,6 +171,7 @@ export async function getPost(
     author: Object.assign(author, {
       image: author.avatar?.file.path ?? null,
     }),
+    processedContent: await renderMessageContent(post.content),
     liked: post.likes.some((like) => like.userId === session.user.id),
   })
 }

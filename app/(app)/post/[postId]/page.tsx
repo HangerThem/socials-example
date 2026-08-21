@@ -3,8 +3,6 @@
 import { useSession } from '@/helper/auth-client'
 import { usePost } from '@/context/postContext'
 import Link from 'next/link'
-import { renderMessageContent } from '@/utils/text'
-import { useEffect, useState } from 'react'
 import { Avatar } from '@/components/common/Avatar'
 import { LikeButton } from '@/components/actions/LikeButton'
 import { formatRelative } from 'date-fns'
@@ -20,7 +18,6 @@ import Image from 'next/image'
 export default function PostPage() {
   const { post, toggleLike, comments, postComment } = usePost()
   const { data: session } = useSession()
-  const [content, setContent] = useState<React.ReactNode[]>([])
 
   const {
     register,
@@ -40,10 +37,6 @@ export default function PostPage() {
     })
   }
 
-  useEffect(() => {
-    renderMessageContent(post.content).then(setContent)
-  }, [post.content])
-
   return (
     <>
       <article className="border-b border-border p-4">
@@ -57,7 +50,7 @@ export default function PostPage() {
             <span className="text-xs text-muted">@{post.author.username}</span>
           </div>
         </Link>
-        <div className="whitespace-pre-wrap">{content}</div>
+        <div className="whitespace-pre-wrap">{post.processedContent}</div>
         {post.postFiles.length > 0 && (
           <div className="mt-1 grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2">
             {post.postFiles.map((postFile) => (
