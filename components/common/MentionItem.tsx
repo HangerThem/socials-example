@@ -23,7 +23,7 @@ export function MentionItem({ user }: MentionItemProps) {
       }
     >
       <Link
-        href={`/profile/${user.id}`}
+        href={`/profile/${user.username}`}
         className="post-mention"
         onClick={(e) => e.stopPropagation()}
       >

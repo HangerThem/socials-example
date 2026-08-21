@@ -16,6 +16,10 @@
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@supabase/supabase-js": "^2.112.3",
+    "@tiptap/extension-mention": "^3.30.2",
+    "@tiptap/extension-placeholder": "^3.30.2",
+    "@tiptap/react": "^3.30.2",
+    "@tiptap/starter-kit": "^3.30.2",
     "better-auth": "^1.7.1",
     "check-password-strength": "^3.0.0",
     "clsx": "^2.1.1",
@@ -26,7 +30,9 @@
     "next": "16.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "textarea-caret": "^3.1.0",
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -34,6 +40,7 @@
     "@types/node": "^26.2.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/textarea-caret": "^3.0.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "oxfmt": "^0.63.0",

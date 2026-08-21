@@ -13,7 +13,7 @@ model User {
   email         String   @unique
   emailVerified Boolean  @default(false)
   username      String   @unique
-  name          String?
+  name          String
   bio           String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

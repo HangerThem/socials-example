@@ -51,7 +51,7 @@ export function CommentButton({ post, comments }: CommentButtonProps) {
           >
             <Avatar username={post.author.username} src={post.author.image} />
             <div className="flex flex-col">
-              <span>{post.author.name ? post.author.name : post.author.username}</span>
+              <span>{post.author.name}</span>
               <span className="text-xs text-muted">@{post.author.username}</span>
             </div>
           </Link>

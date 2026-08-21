@@ -5,11 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { FileInput } from '../ui/FileInput'
-import { Textarea } from '../ui/Textarea'
 import { createPost } from '@/actions/post'
 import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
 import { handleBatchUpload } from '@/helper/file'
+import { MentionTextarea } from '../ui/MentionTextarea'
 
 export function CreateForm() {
   const [serverError, setServerError] = useState<string | null>(null)
@@ -60,17 +60,27 @@ export function CreateForm() {
       setServerError(error instanceof Error ? error.message : 'Failed to create post')
     }
   }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <Textarea
-        label={`Content (${contentLength}/280)`}
-        error={errors.content?.message}
-        maxLength={280}
-        {...register('content')}
+      <Controller
+        name="content"
+        control={control}
+        render={({ field }) => (
+          <MentionTextarea
+            label={`Content (${contentLength}/280)`}
+            mentionItems={[
+              {
+                id: 'alice',
+                label: 'Alice',
+              },
+            ]}
+            error={errors.content?.message}
+            placeholder="What's on your mind?"
+            maxLength={280}
+            {...field}
+          />
+        )}
       />
-
-      {errors.content && <span className="text-like">{errors.content.message}</span>}
 
       <Controller
         name="files"
