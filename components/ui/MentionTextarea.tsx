@@ -4,17 +4,15 @@ import { forwardRef, useImperativeHandle, useCallback, useEffect, useState } fro
 import { cn } from '@/utils/cn'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Mention from '@tiptap/extension-mention'
-import Placeholder from '@tiptap/extension-placeholder'
+import * as StarterKit from '@tiptap/starter-kit'
+import * as Mention from '@tiptap/extension-mention'
+import * as Placeholder from '@tiptap/extension-placeholder'
 import { mergeAttributes } from '@tiptap/core'
 import tippy, { Instance as TippyInstance } from 'tippy.js'
 import 'tippy.js/dist/tippy.css'
-
-export type MentionItem = {
-  id: string
-  label: string
-}
+import { searchUsers } from '@/actions/user'
+import type { UserSimple } from '@/types/User.type'
+import { Avatar } from '../common/Avatar'
 
 export type TiptapHandle = {
   getHTML: () => string
@@ -24,8 +22,8 @@ export type TiptapHandle = {
 }
 
 type MentionListProps = {
-  items: MentionItem[]
-  command: (item: MentionItem) => void
+  items: UserSimple[]
+  command: (item: UserSimple) => void
 }
 
 type MentionListHandle = {
@@ -38,13 +36,11 @@ type MentionTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & 
   inputLike?: boolean
   className?: string
   placeholder?: string
-  mentionItems?: MentionItem[]
   onUpdate?: (html: string, text: string) => void
   defaultContent?: string
   disabled?: boolean
 }
 
-// Separate component for mention suggestions list
 const MentionList = forwardRef<MentionListHandle, MentionListProps>(({ items, command }, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
@@ -87,18 +83,30 @@ const MentionList = forwardRef<MentionListHandle, MentionListProps>(({ items, co
   if (!items.length) return null
 
   return (
-    <div className="min-w-40 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+    <div className="min-w-40 overflow-hidden bg-foreground rounded-md border border-border shadow-lg">
       {items.map((item, index) => (
         <button
           key={item.id}
           type="button"
           onClick={() => selectItem(index)}
           className={cn(
-            'w-full px-3 py-1.5 text-left text-sm transition-colors',
-            index === selectedIndex ? 'bg-primary text-white' : 'text-gray-800 hover:bg-gray-100',
+            'flex items-center gap-2 w-full px-3 py-1.5 text-left text-sm transition-colors text-muted',
+            {
+              'bg-accent text-ink': index === selectedIndex,
+            },
           )}
         >
-          {item.label}
+          <Avatar username={item.username} src={item.image} />
+          <div className="flex flex-col">
+            <span
+              className={cn('font-semibold', {
+                'text-ink': index === selectedIndex,
+              })}
+            >
+              {item.name}
+            </span>
+            <span className="text-xs">@{item.username}</span>
+          </div>
         </button>
       ))}
     </div>
@@ -114,25 +122,20 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
       error,
       inputLike,
       className,
-      placeholder = 'Napište zprávu…',
-      mentionItems = [],
+      placeholder = 'Type here...',
       onUpdate,
       defaultContent,
       disabled,
     },
     ref,
   ) => {
-    const getMentionItems = useCallback(
-      (query: string) => {
-        const normalizedQuery = query.toLowerCase()
-        return mentionItems.filter((item) => item.label.toLowerCase().startsWith(normalizedQuery))
-      },
-      [mentionItems],
-    )
+    const getMentionItems = useCallback(async (query: string) => {
+      return await searchUsers(query)
+    }, [])
 
     const editor = useEditor({
       extensions: [
-        StarterKit.configure({
+        StarterKit.default.configure({
           heading: false,
           blockquote: false,
           codeBlock: false,
@@ -140,17 +143,17 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
           bulletList: false,
           orderedList: false,
         }),
-        Placeholder.configure({
+        Placeholder.default.configure({
           placeholder,
         }),
-        Mention.configure({
+        Mention.default.configure({
           HTMLAttributes: { class: 'mention' },
           renderHTML({ node, options }) {
             return [
               'span',
               mergeAttributes(options.HTMLAttributes, {
-                'data-id': node.attrs.id,
-                'data-type': 'mention',
+                'data-mention-id': node.attrs.id,
+                'data-mention-label': node.attrs.label,
               }),
               `@${node.attrs.label ?? node.attrs.id}`,
             ]

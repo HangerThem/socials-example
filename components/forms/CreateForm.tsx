@@ -15,7 +15,6 @@ export function CreateForm() {
   const [serverError, setServerError] = useState<string | null>(null)
   const router = useRouter()
   const {
-    register,
     handleSubmit,
     watch,
     control,
@@ -68,12 +67,6 @@ export function CreateForm() {
         render={({ field }) => (
           <MentionTextarea
             label={`Content (${contentLength}/280)`}
-            mentionItems={[
-              {
-                id: 'alice',
-                label: 'Alice',
-              },
-            ]}
             error={errors.content?.message}
             placeholder="What's on your mind?"
             maxLength={280}

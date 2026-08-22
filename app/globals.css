@@ -151,3 +151,15 @@ body {
     @apply border-like;
   }
 }
+
+.tippy-box {
+  all: unset !important;
+}
+
+.tippy-content {
+  all: unset !important;
+}
+
+.tippy-arrow {
+  display: none !important;
+}
