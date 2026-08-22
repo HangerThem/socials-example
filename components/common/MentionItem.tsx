@@ -27,7 +27,7 @@ export function MentionItem({ user }: MentionItemProps) {
         className="post-mention"
         onClick={(e) => e.stopPropagation()}
       >
-        {user.username}
+        @{user.username}
       </Link>
     </Tooltip>
   )

@@ -43,7 +43,7 @@ export function Modal({ open, onClose, transparent, children }: ModalProps) {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
           >
             <div
-              className={cn('rounded-lg p-6 max-w-md w-full', {
+              className={cn('rounded-lg p-4 max-w-md w-full', {
                 'bg-background': !transparent,
               })}
             >

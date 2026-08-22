@@ -199,7 +199,11 @@ export async function getFollowing(username: string): Promise<UserSimple[]> {
   })
 }
 
-export async function searchUsers(query: string, threshold = 0.2, limit = 10): Promise<UserSimple[]> {
+export async function searchUsers(
+  query: string,
+  threshold = 0.2,
+  limit = 10,
+): Promise<UserSimple[]> {
   const session = await getSession()
 
   if (!session) {
@@ -214,7 +218,7 @@ export async function searchUsers(query: string, threshold = 0.2, limit = 10): P
     WHERE similarity(u.name, ${query}) > ${threshold}
     ORDER BY similarity(u.name, ${query}) DESC
     LIMIT ${limit}
-  `;
+  `
 
   if (!users) {
     return []

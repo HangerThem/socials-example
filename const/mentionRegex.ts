@@ -1,1 +1,1 @@
-export const mentionRegex = /@(\w+)/g
+export const mentionRegex = /(?<!\w)@(\w+)/g

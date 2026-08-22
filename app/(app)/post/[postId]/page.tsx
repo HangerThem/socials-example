@@ -14,6 +14,7 @@ import { commentSchema, CommentSchema } from '@/schema/Comment.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CommentItem } from '@/components/common/CommentItem'
 import Image from 'next/image'
+import { MessageCircle } from 'lucide-react'
 
 export default function PostPage() {
   const { post, toggleLike, comments, postComment } = usePost()
@@ -77,6 +78,10 @@ export default function PostPage() {
         <div className="mt-2 flex items-center justify-between">
           <div className="flex gap-2 items-center">
             <LikeButton liked={post.liked} likes={post._count.likes} onClick={toggleLike} />
+            <span className="inline-flex items-center gap-1 font-medium px-2 py-1 text-sm">
+              <MessageCircle className="inline-block w-4 h-4" />
+              {post._count.comments}
+            </span>
           </div>
           {post.authorId === session?.user.id && <PostActions postId={post.id} />}
         </div>

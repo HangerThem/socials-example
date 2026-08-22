@@ -7,7 +7,6 @@ import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react'
 import * as StarterKit from '@tiptap/starter-kit'
 import * as Mention from '@tiptap/extension-mention'
 import * as Placeholder from '@tiptap/extension-placeholder'
-import { mergeAttributes } from '@tiptap/core'
 import tippy, { Instance as TippyInstance } from 'tippy.js'
 import 'tippy.js/dist/tippy.css'
 import { searchUsers } from '@/actions/user'
@@ -130,7 +129,8 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
     ref,
   ) => {
     const getMentionItems = useCallback(async (query: string) => {
-      return await searchUsers(query, 0.2, 5)
+      const users = await searchUsers(query, 0.2, 5)
+      return users.map((user) => Object.assign({}, user, { label: user.username }))
     }, [])
 
     const editor = useEditor({
@@ -142,25 +142,30 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
           horizontalRule: false,
           bulletList: false,
           orderedList: false,
+          bold: false,
+          italic: false,
+          strike: false,
+          code: false,
+          underline: false,
         }),
         Placeholder.default.configure({
           placeholder,
         }),
         Mention.default.configure({
           HTMLAttributes: { class: 'mention' },
-          renderHTML({ node, options }) {
+          renderHTML({ node }) {
             return [
               'span',
-              mergeAttributes(options.HTMLAttributes, {
-                'data-mention-id': node.attrs.id,
-                'data-mention-label': node.attrs.label,
-              }),
-              `@${node.attrs.username}`,
+              {
+                'data-mention': node.attrs.label,
+                class: 'mention',
+              },
+              `@${node.attrs.label}`,
             ]
           },
           deleteTriggerWithBackspace: true,
           renderText({ node }) {
-            return `@${node.attrs.username}`
+            return `@${node.attrs.label}`
           },
           suggestion: {
             items: ({ query }) => getMentionItems(query),
@@ -251,9 +256,6 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
           onClick={() => editor?.commands.focus()}
           className={cn(
             'my-1 max-h-48 min-h-24 w-full cursor-text overflow-y-auto rounded-md border border-border bg-background px-3 py-2 outline-none focus:border-accent',
-            !inputLike && 'min-h-32 max-h-50',
-            inputLike && 'max-h-50',
-            disabled && 'cursor-not-allowed bg-gray-100 opacity-50',
             className,
           )}
         >

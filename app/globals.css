@@ -110,14 +110,11 @@ body {
   }
 }
 
+.tiptap .mention,
 .post-tag,
 .post-mention,
 .post-link {
   @apply text-accent font-bold;
-}
-
-.post-tag:before {
-  @apply content-['#'];
 }
 
 .post-link {
@@ -162,4 +159,16 @@ body {
 
 .tippy-arrow {
   display: none !important;
+}
+
+.ProseMirror {
+  @apply relative;
+}
+
+.ProseMirror p.is-empty::before {
+  @apply content-[attr(data-placeholder)] pointer-events-none text-muted absolute left-0 top-0;
+}
+
+.ProseMirror p:not(.is-empty)::before {
+  @apply content-none;
 }

@@ -16,7 +16,6 @@ type Token = {
 export async function renderMessageContent(text: string): Promise<ReactNode[]> {
   const tokens: Token[] = []
 
-  // First pass: collect all mention usernames
   const mentionUsernames = new Set<string>()
   let mentionMatch: RegExpExecArray | null
   const mentionRegexGlobal = new RegExp(
@@ -27,7 +26,6 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
     mentionUsernames.add(mentionMatch[1])
   }
 
-  // Batch fetch all users at once
   const users = await getUsersByUsernames(Array.from(mentionUsernames))
   const userMap = new Map(users.map((u) => [u.username, u]))
 
@@ -66,7 +64,7 @@ export async function renderMessageContent(text: string): Promise<ReactNode[]> {
     return <MentionItem key={user.username} user={user} />
   })
 
-  collect(tagRegex, 'tag', (match) => <span className="post-tag">{match[1]}</span>)
+  collect(tagRegex, 'tag', (match) => <span className="post-tag">#{match[1]}</span>)
 
   tokens.sort((a, b) => a.start - b.start)
   const resolved: Token[] = []

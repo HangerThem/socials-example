@@ -4,7 +4,7 @@ import { MessageCircle } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Modal } from '../modal/Modal'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { commentSchema, type CommentSchema } from '@/schema/Comment.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '../ui/Textarea'
@@ -13,6 +13,7 @@ import { usePosts } from '@/context/postsContext'
 import { formatRelative } from 'date-fns'
 import { Avatar } from '../common/Avatar'
 import Link from 'next/link'
+import { MentionTextarea } from '../ui/MentionTextarea'
 
 type CommentButtonProps = {
   post: Post
@@ -24,7 +25,7 @@ export function CommentButton({ post, comments }: CommentButtonProps) {
   const { postComment } = usePosts()
 
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<CommentSchema>({
@@ -33,6 +34,9 @@ export function CommentButton({ post, comments }: CommentButtonProps) {
     },
     resolver: zodResolver(commentSchema),
   })
+
+  const content = useWatch({ control, name: 'content' })
+  const contentLength = content ? content.length : 0
 
   const onSubmit = (data: CommentSchema) => {
     postComment(post.id, data.content)
@@ -75,10 +79,20 @@ export function CommentButton({ post, comments }: CommentButtonProps) {
           </time>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Textarea
-            {...register('content')}
-            placeholder="Write your comment..."
-            error={errors.content?.message}
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => (
+              <MentionTextarea
+                error={errors.content?.message}
+                placeholder="Write your comment..."
+                maxLength={280}
+                onUpdate={(html, text) => {
+                  field.onChange(text)
+                }}
+                {...field}
+              />
+            )}
           />
           <div className="flex gap-2 mt-2">
             <Button type="submit" size="small" variant="primary">

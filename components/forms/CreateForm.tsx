@@ -69,6 +69,9 @@ export function CreateForm() {
             error={errors.content?.message}
             placeholder="What's on your mind?"
             maxLength={280}
+            onUpdate={(html, text) => {
+              field.onChange(text)
+            }}
             {...field}
           />
         )}
