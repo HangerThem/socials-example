@@ -130,7 +130,7 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
     ref,
   ) => {
     const getMentionItems = useCallback(async (query: string) => {
-      return await searchUsers(query)
+      return await searchUsers(query, 0.2, 5)
     }, [])
 
     const editor = useEditor({
@@ -155,12 +155,12 @@ export const MentionTextarea = forwardRef<TiptapHandle, MentionTextareaProps>(
                 'data-mention-id': node.attrs.id,
                 'data-mention-label': node.attrs.label,
               }),
-              `@${node.attrs.label ?? node.attrs.id}`,
+              `@${node.attrs.username}`,
             ]
           },
           deleteTriggerWithBackspace: true,
           renderText({ node }) {
-            return `@${node.attrs.label ?? node.attrs.id}`
+            return `@${node.attrs.username}`
           },
           suggestion: {
             items: ({ query }) => getMentionItems(query),

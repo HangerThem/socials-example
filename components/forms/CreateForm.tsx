@@ -3,7 +3,7 @@
 import { postSchema, PostSchema } from '@/schema/Post.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { FileInput } from '../ui/FileInput'
 import { createPost } from '@/actions/post'
 import { useRouter } from 'next/navigation'
@@ -16,14 +16,13 @@ export function CreateForm() {
   const router = useRouter()
   const {
     handleSubmit,
-    watch,
     control,
     formState: { errors, isSubmitting },
   } = useForm<PostSchema>({
     resolver: zodResolver(postSchema),
   })
 
-  const content = watch('content')
+  const content = useWatch({ control, name: 'content' })
   const contentLength = content ? content.length : 0
 
   const onSubmit = async (data: PostSchema) => {

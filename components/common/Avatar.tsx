@@ -39,9 +39,7 @@ export function Avatar({ username, size = 'md', src, alt, className }: AvatarPro
       {src ? (
         <Image
           src={`/images/uploads/${src}`}
-          alt={
-            alt || `${username}'${username[0] === 's' ? '' : 's'} profile picture`
-          }
+          alt={alt || `${username}'${username[0] === 's' ? '' : 's'} profile picture`}
           className="object-cover"
           unoptimized
           fill

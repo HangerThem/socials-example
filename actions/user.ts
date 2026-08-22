@@ -199,35 +199,30 @@ export async function getFollowing(username: string): Promise<UserSimple[]> {
   })
 }
 
-export async function searchUsers(query: string): Promise<UserSimple[]> {
+export async function searchUsers(query: string, threshold = 0.2, limit = 10): Promise<UserSimple[]> {
   const session = await getSession()
 
   if (!session) {
     throw new Error('User not authenticated')
   }
 
-  const users = await prisma.user.findMany({
-    where: {
-      OR: [{ username: { contains: query } }, { name: { contains: query } }],
-    },
-    include: {
-      avatar: {
-        include: {
-          file: true,
-        },
-      },
-    },
-    take: 10,
-  })
+  const users = await prisma.$queryRaw<UserSimple[]>`
+    SELECT u.id, u.name, u.username, u.email, f.path as image
+    FROM "handle_social"."user" u
+    LEFT JOIN "handle_social"."avatar_file" af ON u.id = af."userId"
+    LEFT JOIN "handle_social"."file" f ON af."fileId" = f.id
+    WHERE similarity(u.name, ${query}) > ${threshold}
+    ORDER BY similarity(u.name, ${query}) DESC
+    LIMIT ${limit}
+  `;
 
   if (!users) {
     return []
   }
 
   return users.map((user) => {
-    const { avatar, ...userProps } = user
-    return Object.assign(userProps, {
-      image: avatar?.file.path ?? null,
+    return Object.assign(user, {
+      image: user.image ?? null,
     })
   })
 }

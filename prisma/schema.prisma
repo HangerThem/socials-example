@@ -9,46 +9,40 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  username      String   @unique
+  id            String        @id @default(cuid())
+  email         String        @unique
+  emailVerified Boolean       @default(false)
+  username      String        @unique
   name          String
   bio           String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  accounts      Account[]
+  avatar        AvatarFile?
+  comments      Comment[]
+  commentLikes  CommentLike[]
+  files         File[]
+  following     Follow[]      @relation("Follower")
+  followers     Follow[]      @relation("Following")
+  likes         Like[]
+  posts         Post[]
+  sessions      Session[]
 
-  avatar AvatarFile?
-
-  posts        Post[]
-  comments     Comment[]
-  likes        Like[]
-  commentLikes CommentLike[]
-
-  following Follow[] @relation("Follower")
-  followers Follow[] @relation("Following")
-
-  sessions Session[]
-  accounts Account[]
-  files    File[]
-
-  @@map("users")
+  @@map("user")
   @@schema("handle_social")
 }
 
 model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  @@unique([token])
   @@index([userId])
   @@map("session")
   @@schema("handle_social")
@@ -68,9 +62,8 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -91,122 +84,111 @@ model Verification {
 }
 
 model Follow {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
-  follower    User   @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
   followerId  String
-  following   User   @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
-  @@map("follows")
+  @@map("follow")
   @@schema("handle_social")
 }
 
 model Post {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   content   String
-  createdAt DateTime @default(now())
-
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
-
+  createdAt DateTime   @default(now())
+  authorId  String
   comments  Comment[]
   likes     Like[]
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   postFiles PostFile[]
 
   @@index([authorId])
-  @@map("posts")
+  @@map("post")
   @@schema("handle_social")
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  content   String
-  createdAt DateTime @default(now())
-
-  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId   String
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
-
+  id           String        @id @default(cuid())
+  content      String
+  createdAt    DateTime      @default(now())
+  postId       String
+  authorId     String
+  author       User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post         Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   commentLikes CommentLike[]
 
   @@index([postId])
-  @@map("comments")
+  @@map("comment")
   @@schema("handle_social")
 }
 
 model Like {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  postId    String
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
-  @@map("likes")
+  @@map("like")
   @@schema("handle_social")
 }
 
 model CommentLike {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-
-  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([commentId, userId])
-  @@map("comment_likes")
+  @@map("comment_like")
   @@schema("handle_social")
 }
 
 model File {
-  id        String   @id @default(cuid())
-  name      String
-  path      String
-  mimetype  String
-  size      Int
-  alt       String?
-  createdAt DateTime @default(now())
-
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
-
+  id          String      @id @default(cuid())
+  name        String
+  path        String
+  mimetype    String
+  size        Int
+  alt         String?
+  createdAt   DateTime    @default(now())
+  authorId    String
+  avatarFiles AvatarFile?
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   postFiles   PostFile[]
-  avatarFiles AvatarFile[]
 
-  @@map("files")
+  @@map("file")
   @@schema("handle_social")
 }
 
 model PostFile {
-  id String @id @default(cuid())
-
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
   postId String
-  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId String
+  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([postId, fileId])
-  @@map("post_files")
+  @@map("post_file")
   @@schema("handle_social")
 }
 
 model AvatarFile {
-  id String @id @default(cuid())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
   userId String @unique
-  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId String @unique
+  file   File   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, fileId])
-  @@map("avatar_files")
+  @@map("avatar_file")
   @@schema("handle_social")
 }

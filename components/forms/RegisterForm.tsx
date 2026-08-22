@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema, RegisterSchema } from '@/schema/Register.schema'
 import { signUp } from '@/lib/auth-client'
@@ -21,17 +21,21 @@ export function RegisterForm({ callbackUrl }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
   })
 
-  const password = watch('password')
+  const password = useWatch({
+    control,
+    name: 'password',
+  })
   const strengthLevel = passwordStrength(password).id
   const strengthPercent = (strengthLevel / 3) * 100
 
   const onSubmit = async (data: RegisterSchema) => {
+    console.log('RegisterForm onSubmit', data)
     setServerError(null)
 
     const { error: signupError } = await signUp.email({
